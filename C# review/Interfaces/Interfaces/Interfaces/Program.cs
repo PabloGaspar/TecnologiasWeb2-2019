@@ -15,6 +15,7 @@ namespace Interfaces
             ShopWithCreditCard(MCCreditCard, amountToShop);
 
             Console.ReadKey();
+            global::System.Console.WriteLine();
 
             CreditCardFactory.type = CreditCardType.Visa;
             var VCredidCard = CreditCardFactory.Create();

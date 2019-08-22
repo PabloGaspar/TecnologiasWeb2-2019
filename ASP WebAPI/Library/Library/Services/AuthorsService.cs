@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Library.Exceptions;
 using Library.Models;
 
 namespace Library.Services
@@ -11,7 +12,7 @@ namespace Library.Services
     public class AuthorsService : IAuthorsService
     {
         private List<Author> authors;
-
+        private HashSet<string> allowedOrderByValues;
         public AuthorsService()
         {
             authors = new List<Author>()
@@ -34,6 +35,8 @@ namespace Library.Services
                 }
 
             };
+
+            allowedOrderByValues = new HashSet<string>() { "name", "lastname", "age", "id" };
         }
 
         public Author CreateAuthor(Author newAuthor)
@@ -48,12 +51,34 @@ namespace Library.Services
 
         public Author GetAuthor(int id)
         {
-            throw new NotImplementedException();
+            var author = authors.SingleOrDefault(a => a.id == id);
+            if (author == null)
+            {
+                throw new NotFoundItemException($"cannot found author with id {id}");
+            }
+
+            return author;
         }
 
-        public List<Author> GetAuthors()
+        public IEnumerable<Author> GetAuthors(string orderBy)
         {
-            return authors;
+            var orderByLower = orderBy.ToLower();
+            if (!allowedOrderByValues.Contains(orderByLower))
+            {
+                throw new BadRequestOperationException($"invalid Order By value : {orderBy} the only allowed values are {string.Join(", ", allowedOrderByValues)}");
+            }
+
+            switch (orderByLower)
+            {
+                case "name":
+                    return authors.OrderBy(a => a.Name);
+                case "lastname":
+                    return authors.OrderBy(a => a.LastName);
+                case "age":
+                    return authors.OrderBy(a => a.Age);
+                default:
+                    return authors.OrderBy(a => a.id); ;
+            }
         }
 
         public Author UpdateAuthor(Author newAuthor)

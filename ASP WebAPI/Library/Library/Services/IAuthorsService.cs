@@ -8,7 +8,7 @@ namespace Library.Services
 {
     public interface IAuthorsService
     {
-        List<Author> GetAuthors();
+        IEnumerable<Author> GetAuthors(string orderBy);
         Author GetAuthor(int id);
         Author CreateAuthor(Author newAuthor);
         bool DeleteAuthor(int id);

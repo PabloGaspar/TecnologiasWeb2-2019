@@ -1,19 +1,17 @@
-﻿using LibraryAPI.Models;
+﻿using Library.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace LibraryAPI.Services
+namespace Library.Services
 {
     public interface IAuthorsService
     {
-        IEnumerable<Author> GetAuthors(string orderBy);
+        List<Author> GetAuthors();
         Author GetAuthor(int id);
-        Author AddAuthor(Author author);
-        Author UpdateAuthor(int id, Author author);
+        Author CreateAuthor(Author newAuthor);
         bool DeleteAuthor(int id);
-
-
+        Author UpdateAuthor(Author newAuthor);
     }
 }

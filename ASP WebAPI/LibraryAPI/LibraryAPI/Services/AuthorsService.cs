@@ -1,8 +1,10 @@
-﻿using LibraryAPI.Models;
+﻿using LibraryAPI.Exceptions;
+using LibraryAPI.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using InvalidOperationException = LibraryAPI.Exceptions.InvalidOperationException;
 
 namespace LibraryAPI.Services
 {
@@ -50,7 +52,6 @@ namespace LibraryAPI.Services
 
         public IEnumerable<Author> GetAuthors(string orderBy)
         {
-
             orderBy = orderBy.ToLower();
             if (!allowedOrderByQueries.Contains(orderBy))
             {
@@ -76,22 +77,52 @@ namespace LibraryAPI.Services
 
         public Author GetAuthor(int id)
         {
-            return authors.FirstOrDefault(a => a.Id == id);
+            var author =  authors.SingleOrDefault(a => a.Id == id);
+
+            if (author == null)
+            {
+                throw new NotFoundException("author not found");
+            }
+            return author;
         }
 
         public Author AddAuthor(Author author)
         {
-            throw new NotImplementedException();
+            var nextId = authors.OrderByDescending(a => a.Id).FirstOrDefault().Id + 1;
+            author.Id = nextId;
+            authors.Add(author);
+            return author;
         }
 
-        public Author UpdateAuthor(Author author)
+        public Author UpdateAuthor(int id, Author author)
         {
-            throw new NotImplementedException();
+            if (id != author.Id)
+            {
+                throw new InvalidOperationException("URL id needs to be the same as Author id");
+            }
+
+            var authorToUpdate = authors.SingleOrDefault(a => a.Id == author.Id);
+            if (authorToUpdate == null)
+            {
+                throw new NotFoundException("invalid author to update");
+            }
+
+            authorToUpdate.LastName = author.LastName;
+            authorToUpdate.Name = author.Name;
+            authorToUpdate.Nationallity = author.Nationallity;
+            authorToUpdate.Age = author.Age;
+            return author;
         }
 
         public bool DeleteAuthor(int id)
         {
-            throw new NotImplementedException();
+            var authorToDelete = authors.SingleOrDefault(a => a.Id == id);
+            if (authorToDelete == null)
+            {
+                throw new NotFoundException("invalid author to delete");
+            }
+            authors.Remove(authorToDelete);
+            return true;
         }
     }
 }

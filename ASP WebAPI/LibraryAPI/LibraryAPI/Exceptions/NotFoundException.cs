@@ -5,12 +5,12 @@ using System.Threading.Tasks;
 
 namespace LibraryAPI.Exceptions
 {
-    public class InvalidOperationException: Exception
+    public class NotFoundException : Exception
     {
-        public InvalidOperationException(string message)
+        public NotFoundException(string message)
             :base(message)
         {
-                
+            
         }
     }
 }

@@ -2,16 +2,20 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using LibraryAPI.Exceptions;
 using LibraryAPI.Models;
 using LibraryAPI.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
+using InvalidOperationException = LibraryAPI.Exceptions.InvalidOperationException;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace LibraryAPI.Controllers
 {
     [Route("api/[controller]")]
+    [ApiController]
     public class AuthorsController : ControllerBase
     {
         private IAuthorsService authorsService;
@@ -26,20 +30,9 @@ namespace LibraryAPI.Controllers
         {
             try
             {
-                /*int a = 0;
-                int b = 2;
-                int c = b / a;*/
-                /*var authors = new List<string>()
-                {
-                    "Tolkien",
-                    "Lovecraft"
-                };
-
-                return Ok(authors);*/
-
                 return Ok(authorsService.GetAuthors(orderBy));
             }
-            catch(InvalidOperationException ex)
+            catch (InvalidOperationException ex)
             {
                 return BadRequest(ex.Message);
             }
@@ -56,14 +49,57 @@ namespace LibraryAPI.Controllers
             try
             {
                 var author = this.authorsService.GetAuthor(authorId);
-
-                if (author == null)
-                {
-                    return NotFound($"the author with id {authorId} does not exist");
-                }
-
                 return Ok(author);
 
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return this.StatusCode(StatusCodes.Status500InternalServerError, $"Something bad happened: {ex.Message}");
+            }
+        }
+
+        [HttpPost]
+        public ActionResult<Author> Post(Author author)
+        {
+            var postedAuthor = this.authorsService.AddAuthor(author);
+            return Created($"/api/authors/{postedAuthor.Id}", postedAuthor);
+        }
+
+        [HttpDelete("{authorId}")]
+        public ActionResult<bool> Delete(int authorId)
+        {
+            try
+            {
+                return Ok(this.authorsService.DeleteAuthor(authorId));
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return this.StatusCode(StatusCodes.Status500InternalServerError, $"Something bad happened: {ex.Message}");
+            }
+        }
+
+        [HttpPut("{authorId}")]
+        public ActionResult<Author> Update(int authorId, Author author)
+        {
+            try
+            {
+                return Ok(this.authorsService.UpdateAuthor(authorId, author));
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(ex.Message);
             }
             catch (Exception ex)
             {

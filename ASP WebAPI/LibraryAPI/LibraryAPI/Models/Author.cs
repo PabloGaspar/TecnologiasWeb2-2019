@@ -12,5 +12,6 @@ namespace LibraryAPI.Models
         public string Nationallity { get; set; }
         public int Age { get; set; }
         public int Id { get; set; }
+        public IEnumerable<Book> books { get; set; }
     }
 }

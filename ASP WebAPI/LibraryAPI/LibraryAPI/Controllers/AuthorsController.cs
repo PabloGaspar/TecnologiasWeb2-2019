@@ -26,11 +26,11 @@ namespace LibraryAPI.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<Author>> Get(string orderBy = "Id")
+        public ActionResult<IEnumerable<Author>> Get(string orderBy = "Id", bool showBooks = false)
         {
             try
             {
-                return Ok(authorsService.GetAuthors(orderBy));
+                return Ok(authorsService.GetAuthors(orderBy, showBooks));
             }
             catch (InvalidOperationException ex)
             {
@@ -43,12 +43,12 @@ namespace LibraryAPI.Controllers
             }
         }
 
-        [HttpGet("{authorId}")]
-        public ActionResult<Author> Get(int authorId)
+        [HttpGet("{authorId:int}")]
+        public ActionResult<Author> Get(int authorId, bool showBooks = false)
         {
             try
             {
-                var author = this.authorsService.GetAuthor(authorId);
+                var author = this.authorsService.GetAuthor(authorId, showBooks);
                 return Ok(author);
 
             }
@@ -69,7 +69,7 @@ namespace LibraryAPI.Controllers
             return Created($"/api/authors/{postedAuthor.Id}", postedAuthor);
         }
 
-        [HttpDelete("{authorId}")]
+        [HttpDelete("{authorId:int}")]
         public ActionResult<bool> Delete(int authorId)
         {
             try

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using LibraryAPI.Data.Repository;
 using LibraryAPI.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -27,7 +28,9 @@ namespace LibraryAPI
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-            services.AddSingleton<IAuthorsService, AuthorsService>();
+            services.AddTransient<IAuthorsService, AuthorsService>();
+            services.AddTransient<IBooksService, BooksService>();
+            services.AddSingleton<IAuthorsRepository, AuthorsRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

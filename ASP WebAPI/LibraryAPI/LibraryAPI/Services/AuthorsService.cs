@@ -1,4 +1,5 @@
-﻿using LibraryAPI.Exceptions;
+﻿using LibraryAPI.Data.Repository;
+using LibraryAPI.Exceptions;
 using LibraryAPI.Models;
 using System;
 using System.Collections.Generic;
@@ -10,35 +11,11 @@ namespace LibraryAPI.Services
 {
     public class AuthorsService : IAuthorsService
     {
-        private List<Author> authors = new List<Author>();
+        private IAuthorsRepository authorsRepository;
 
-        public AuthorsService()
+        public AuthorsService(IAuthorsRepository authorsRepository)
         {
-            authors.Add(new Author() {
-                Id = 1,
-                Age = 44,
-                LastName  = "Saint-Exupery",
-                Name = "Antoine",
-                Nationallity = "France"
-            });
-
-            authors.Add(new Author()
-            {
-                Id = 2,
-                Age = 85,
-                LastName = "Tolkien",
-                Name = "JRR",
-                Nationallity = "South Africa",
-            });
-
-            authors.Add(new Author()
-            {
-                Id = 3,
-                Age = 75,
-                LastName = "Lovecraft",
-                Name = "HP",
-                Nationallity = "USA",
-            });
+            this.authorsRepository = authorsRepository;          
         }
 
         private HashSet<string> allowedOrderByQueries = new HashSet<string>()
@@ -50,7 +27,7 @@ namespace LibraryAPI.Services
         };
 
 
-        public IEnumerable<Author> GetAuthors(string orderBy)
+        public IEnumerable<Author> GetAuthors(string orderBy, bool showBooks)
         {
             orderBy = orderBy.ToLower();
             if (!allowedOrderByQueries.Contains(orderBy))
@@ -58,7 +35,19 @@ namespace LibraryAPI.Services
                 throw new InvalidOperationException($"Invalid \" {orderBy} \" orderBy query param. The allowed values are {string.Join(",", allowedOrderByQueries)}");
             }
 
-            var authors = this.authors;
+            var authors = authorsRepository.GetAuthors();
+
+            foreach (var author in authors)
+            {
+                if (showBooks)
+                {
+                    author.books = authorsRepository.GetBooks().Where(b => b.AuthorId == author.Id);
+                }
+                else
+                {
+                    author.books = null;
+                }
+            }
 
             switch (orderBy)
             {
@@ -71,27 +60,35 @@ namespace LibraryAPI.Services
                 case "nationallity":
                     return authors.OrderBy(a => a.Name);
                 default:
-                    return this.authors;
+                    return authors;
             }
         }
 
-        public Author GetAuthor(int id)
+        public Author GetAuthor(int id, bool showBooks)
         {
-            var author =  authors.SingleOrDefault(a => a.Id == id);
+            var author = authorsRepository.GetAuthor(id);
 
             if (author == null)
             {
                 throw new NotFoundException("author not found");
             }
+
+            if (showBooks)
+            {
+                author.books = authorsRepository.GetBooks().Where(b => b.AuthorId == author.Id);
+            }
+            else
+            {
+                author.books = null;
+            }
+
             return author;
         }
 
         public Author AddAuthor(Author author)
         {
-            var nextId = authors.OrderByDescending(a => a.Id).FirstOrDefault().Id + 1;
-            author.Id = nextId;
-            authors.Add(author);
-            return author;
+            var savedAuthor = authorsRepository.CreateAuthor(author);
+            return savedAuthor;
         }
 
         public Author UpdateAuthor(int id, Author author)
@@ -101,28 +98,24 @@ namespace LibraryAPI.Services
                 throw new InvalidOperationException("URL id needs to be the same as Author id");
             }
 
-            var authorToUpdate = authors.SingleOrDefault(a => a.Id == author.Id);
+            var authorToUpdate = authorsRepository.GetAuthor(id);
             if (authorToUpdate == null)
             {
                 throw new NotFoundException("invalid author to update");
             }
 
-            authorToUpdate.LastName = author.LastName;
-            authorToUpdate.Name = author.Name;
-            authorToUpdate.Nationallity = author.Nationallity;
-            authorToUpdate.Age = author.Age;
-            return author;
+            author.Id = id;
+            return authorsRepository.UpdateAuthor(authorToUpdate);
         }
 
         public bool DeleteAuthor(int id)
         {
-            var authorToDelete = authors.SingleOrDefault(a => a.Id == id);
+            var authorToDelete = authorsRepository.GetAuthors().SingleOrDefault(a => a.Id == id);
             if (authorToDelete == null)
             {
                 throw new NotFoundException("invalid author to delete");
             }
-            authors.Remove(authorToDelete);
-            return true;
+            return authorsRepository.DeleteAuthor(id);
         }
     }
 }

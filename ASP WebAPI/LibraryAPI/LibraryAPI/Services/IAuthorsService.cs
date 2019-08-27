@@ -8,12 +8,10 @@ namespace LibraryAPI.Services
 {
     public interface IAuthorsService
     {
-        IEnumerable<Author> GetAuthors(string orderBy);
-        Author GetAuthor(int id);
+        IEnumerable<Author> GetAuthors(string orderBy, bool showBooks);
+        Author GetAuthor(int id, bool showBooks);
         Author AddAuthor(Author author);
         Author UpdateAuthor(int id, Author author);
         bool DeleteAuthor(int id);
-
-
     }
 }

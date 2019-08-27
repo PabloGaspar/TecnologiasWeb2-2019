@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace Library.Controllers
 {
     [Route("api/[controller]")]
-    public class AuthorsController: ControllerBase
+    public class AuthorsController : ControllerBase
     {
         private IAuthorsService authorsService;
 
@@ -27,7 +27,7 @@ namespace Library.Controllers
             {
                 return Ok(authorsService.GetAuthors(orderBy));
             }
-            catch(BadRequestOperationException ex)
+            catch (BadRequestOperationException ex)
             {
                 return BadRequest(ex.Message);
             }
@@ -45,14 +45,56 @@ namespace Library.Controllers
             {
                 return Ok(authorsService.GetAuthor(id));
             }
-            catch(NotFoundItemException ex)
+            catch (NotFoundItemException ex)
             {
                 return NotFound(ex.Message);
             }
             catch (Exception ex)
             {
 
-                return StatusCode(StatusCodes.Status500InternalServerError,ex.Message); 
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+        [HttpPost]
+        public ActionResult<Author> PostAuthor([FromBody] Author author)
+        {
+            var createdAuthor = authorsService.CreateAuthor(author);
+            return Created($"/api/authors/{createdAuthor.id}", createdAuthor);
+        }
+        [HttpDelete("{id:int}")]
+        public ActionResult<bool> DeleteAuthor(int id)
+        {
+            try
+            {
+                var result = authorsService.DeleteAuthor(id);
+                if (!result)
+                    return StatusCode(StatusCodes.Status500InternalServerError, "cannot delete author");
+                return Ok(result);
+            }
+            catch (NotFoundItemException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+        [HttpPut("{id:int}")]
+        public ActionResult<Author> PutAuthor(int id, [FromBody]Author author )
+        {
+            try
+            {
+                return Ok(authorsService.UpdateAuthor(id, author));
+
+            }
+            catch (NotFoundItemException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
     }

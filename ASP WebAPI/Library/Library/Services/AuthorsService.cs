@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Library.Data.Repository;
 using Library.Exceptions;
 using Library.Models;
 
@@ -11,53 +12,33 @@ namespace Library.Services
 
     public class AuthorsService : IAuthorsService
     {
-        private List<Author> authors;
         private HashSet<string> allowedOrderByValues;
-        public AuthorsService()
+        private ILibraryRepository libraryRepository;
+        public AuthorsService(ILibraryRepository libraryRepository)
         {
-            authors = new List<Author>()
-            {
-                new Author()
-                {
-                    id = 1,
-                    LastName = "Tolkien",
-                    Age = 87,
-                    Name = "JRR",
-                    Nationality = "south africa"
-                },
-                new Author()
-                {
-                    id = 2,
-                    LastName = "King",
-                    Age = 65,
-                    Name = "Sthephen",
-                    Nationality = "USA"
-                }
-
-            };
-
+            this.libraryRepository = libraryRepository;
             allowedOrderByValues = new HashSet<string>() { "name", "lastname", "age", "id" };
         }
 
         public Author CreateAuthor(Author newAuthor)
         {
-            throw new NotImplementedException();
+            newAuthor.id = 0;
+           return  libraryRepository.CreateAuthor(newAuthor);
         }
 
         public bool DeleteAuthor(int id)
         {
-            throw new NotImplementedException();
+            var authorToDelete = libraryRepository.GetAuthor(id);
+            if (authorToDelete == null)
+            {
+                throw new NotFoundItemException($"author {id} does not exists");
+            }
+            return libraryRepository.DeleteAuhor(id);
         }
 
         public Author GetAuthor(int id)
         {
-            var author = authors.SingleOrDefault(a => a.id == id);
-            if (author == null)
-            {
-                throw new NotFoundItemException($"cannot found author with id {id}");
-            }
-
-            return author;
+            return validatAuthorId(id);
         }
 
         public IEnumerable<Author> GetAuthors(string orderBy)
@@ -67,7 +48,7 @@ namespace Library.Services
             {
                 throw new BadRequestOperationException($"invalid Order By value : {orderBy} the only allowed values are {string.Join(", ", allowedOrderByValues)}");
             }
-
+            var authors = libraryRepository.GetAuthors();
             switch (orderByLower)
             {
                 case "name":
@@ -81,9 +62,31 @@ namespace Library.Services
             }
         }
 
-        public Author UpdateAuthor(Author newAuthor)
+        public Author UpdateAuthor(int id, Author newAuthor)
         {
-            throw new NotImplementedException();
+            validatAuthorId(id);
+
+            if (newAuthor.id == null)
+            {
+                newAuthor.id = id;
+            }
+            if (id != newAuthor.id)
+            {
+                throw new BadRequestOperationException("id URL should be euqual to body");
+            }
+            newAuthor.id = id;
+
+            return libraryRepository.UpdateAuthor(newAuthor);
+        }
+
+        private Author validatAuthorId(int id)
+        {
+            var author = libraryRepository.GetAuthor(id);
+            if (author == null)
+            {
+                throw new NotFoundItemException($"cannot found author with id {id}");
+            }
+            return author;
         }
     }
 }

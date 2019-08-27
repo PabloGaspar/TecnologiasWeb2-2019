@@ -12,6 +12,6 @@ namespace Library.Services
         Author GetAuthor(int id);
         Author CreateAuthor(Author newAuthor);
         bool DeleteAuthor(int id);
-        Author UpdateAuthor(Author newAuthor);
+        Author UpdateAuthor(int id, Author newAuthor);
     }
 }

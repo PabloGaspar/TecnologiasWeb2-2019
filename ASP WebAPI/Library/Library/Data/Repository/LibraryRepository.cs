@@ -9,6 +9,7 @@ namespace Library.Data.Repository
     public class LibraryRepository : ILibraryRepository
     {
         private List<Author> authors;
+        private List<Book> books;
         public LibraryRepository()
         {
             authors = new List<Author>()
@@ -32,6 +33,44 @@ namespace Library.Data.Repository
 
             };
 
+            books = new List<Book>()
+            {
+                new Book()
+                {
+                    Id = 1,
+                    AuthorId = 1,
+                    Genre = "Fantasy",
+                    Pages = 400,
+                    Tittle = "The Silmarillon"
+
+                },
+                new Book()
+                {
+                    Id = 2,
+                    AuthorId = 1,
+                    Genre = "Fantasy",
+                    Pages = 300,
+                    Tittle = "The Lord of the Rings"
+
+                },
+                new Book()
+                {
+                    Id = 3,
+                    AuthorId = 2,
+                    Genre = "Horror",
+                    Pages = 300,
+                    Tittle = "It"
+                },
+                new Book()
+                {
+                    Id = 4,
+                    AuthorId = 2,
+                    Genre = "Horror",
+                    Pages = 300,
+                    Tittle = "The Shining"
+                }
+            };
+
         }
         public Author CreateAuthor(Author author)
         {
@@ -42,10 +81,20 @@ namespace Library.Data.Repository
             return author;
         }
 
+        public Book CreateBook(Book book)
+        {
+            throw new NotImplementedException();
+        }
+
         public bool DeleteAuhor(int id)
         {
             var authorToDelete = authors.Single(a => a.id == id);
             return authors.Remove(authorToDelete);
+        }
+
+        public bool DeleteBook(int id)
+        {
+            throw new NotImplementedException();
         }
 
         public Author GetAuthor(int id)
@@ -56,6 +105,16 @@ namespace Library.Data.Repository
         public IEnumerable<Author> GetAuthors()
         {
             return authors;
+        }
+
+        public Book GetBook(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<Book> GetBooks()
+        {
+            return books;
         }
 
         public Author UpdateAuthor(Author author)
@@ -69,6 +128,11 @@ namespace Library.Data.Repository
             return authorToUpdate;
 
 
+        }
+
+        public Book UpdateBook(Book book)
+        {
+            throw new NotImplementedException();
         }
     }
 }

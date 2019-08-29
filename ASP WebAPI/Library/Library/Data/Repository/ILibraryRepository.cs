@@ -18,5 +18,10 @@ namespace Library.Data.Repository
 
         //books
 
+        IEnumerable<Book> GetBooks();
+        Book GetBook(int id);
+        Book CreateBook(Book book);
+        Book UpdateBook(Book book);
+        bool DeleteBook(int id);
     }
 }

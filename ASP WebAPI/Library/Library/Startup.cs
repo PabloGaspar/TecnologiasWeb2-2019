@@ -29,6 +29,7 @@ namespace Library
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddTransient<IAuthorsService, AuthorsService>();
+            services.AddTransient<IBooksService, BooksService>();
             services.AddSingleton<ILibraryRepository, LibraryRepository>();
             
         }

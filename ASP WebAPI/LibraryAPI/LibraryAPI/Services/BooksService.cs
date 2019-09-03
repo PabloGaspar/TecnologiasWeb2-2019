@@ -11,9 +11,9 @@ namespace LibraryAPI.Services
     public class BooksService : IBooksService
     {
 
-        private IAuthorsRepository authorsRepository;
+        private ILibraryRepository authorsRepository;
 
-        public BooksService(IAuthorsRepository authorsRepository)
+        public BooksService(ILibraryRepository authorsRepository)
         {
             this.authorsRepository = authorsRepository;
         }

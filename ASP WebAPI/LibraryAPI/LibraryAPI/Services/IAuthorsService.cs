@@ -10,7 +10,7 @@ namespace LibraryAPI.Services
     {
         IEnumerable<Author> GetAuthors(string orderBy, bool showBooks);
         Author GetAuthor(int id, bool showBooks);
-        Author AddAuthor(Author author);
+        Task<Author> AddAuthorAsync(Author author);
         Author UpdateAuthor(int id, Author author);
         bool DeleteAuthor(int id);
     }

@@ -2,19 +2,21 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using LibraryAPI.Data.Entities;
 using LibraryAPI.Models;
 
 namespace LibraryAPI.Data.Repository
 {
 
 
-    public class AuthorsRepository : IAuthorsRepository
+    public class LibraryRepository : ILibraryRepository
     {
         private List<Author> authors = new List<Author>();
         private List<Book> books = new List<Book>();
-
-        public AuthorsRepository()
+        private LibraryDBContext libraryDBContext;
+        public LibraryRepository(LibraryDBContext libraryDBContext)
         {
+            this.libraryDBContext = libraryDBContext;
             authors.Add(new Author()
             {
                 Id = 1,
@@ -89,12 +91,13 @@ namespace LibraryAPI.Data.Repository
         }
 
 
-        public Author CreateAuthor(Author author)
+        public void CreateAuthor(AuthorEntity author)
         {
-            var nextId = authors.OrderByDescending(a => a.Id).FirstOrDefault().Id + 1;
+            /*var nextId = authors.OrderByDescending(a => a.Id).FirstOrDefault().Id + 1;
             author.Id = nextId;
             this.authors.Add(author);
-            return author;
+            return author;*/
+            var savedAuthor = libraryDBContext.Authors.Add(author);
         }
 
         public Book CreateBook(Book book)
@@ -138,6 +141,11 @@ namespace LibraryAPI.Data.Repository
         public IEnumerable<Book> GetBooks()
         {
             return books;
+        }
+
+        public async Task<bool> SaveChangesAsync()
+        {
+            return (await libraryDBContext.SaveChangesAsync()) > 0;
         }
 
         public Author UpdateAuthor(Author author)

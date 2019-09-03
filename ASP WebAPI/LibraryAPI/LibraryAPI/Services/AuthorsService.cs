@@ -1,4 +1,6 @@
-﻿using LibraryAPI.Data.Repository;
+﻿using AutoMapper;
+using LibraryAPI.Data.Entities;
+using LibraryAPI.Data.Repository;
 using LibraryAPI.Exceptions;
 using LibraryAPI.Models;
 using System;
@@ -11,11 +13,13 @@ namespace LibraryAPI.Services
 {
     public class AuthorsService : IAuthorsService
     {
-        private IAuthorsRepository authorsRepository;
+        private ILibraryRepository authorsRepository;
+        private readonly IMapper mapper;
 
-        public AuthorsService(IAuthorsRepository authorsRepository)
+        public AuthorsService(ILibraryRepository authorsRepository, IMapper mapper)
         {
-            this.authorsRepository = authorsRepository;          
+            this.authorsRepository = authorsRepository;
+            this.mapper = mapper;
         }
 
         private HashSet<string> allowedOrderByQueries = new HashSet<string>()
@@ -85,10 +89,17 @@ namespace LibraryAPI.Services
             return author;
         }
 
-        public Author AddAuthor(Author author)
+        public async Task<Author> AddAuthorAsync(Author author)
         {
-            var savedAuthor = authorsRepository.CreateAuthor(author);
-            return savedAuthor;
+            var authorEntity = mapper.Map<AuthorEntity>(author);
+
+            authorsRepository.CreateAuthor(authorEntity);
+            if (await authorsRepository.SaveChangesAsync())
+            {
+                return mapper.Map<Author>(authorEntity);
+            }
+
+            throw new Exception("There were an error with the DB");
         }
 
         public Author UpdateAuthor(int id, Author author)

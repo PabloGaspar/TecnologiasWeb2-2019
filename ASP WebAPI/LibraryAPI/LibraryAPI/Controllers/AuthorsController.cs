@@ -63,14 +63,14 @@ namespace LibraryAPI.Controllers
         }
 
         [HttpPost]
-        public ActionResult<Author> Post([FromBody] Author author)
+        public async Task<ActionResult<Author>> Post([FromBody] Author author)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var postedAuthor = this.authorsService.AddAuthor(author);
+            var postedAuthor = await this.authorsService.AddAuthorAsync(author);
             return Created($"/api/authors/{postedAuthor.Id}", postedAuthor);
         }
 

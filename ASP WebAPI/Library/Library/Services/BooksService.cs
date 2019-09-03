@@ -18,7 +18,15 @@ namespace Library.Services
 
         public Book AddBook(int authorId, Book book)
         {
-            throw new NotImplementedException();
+            validateAuthor(authorId);
+            if (book.AuthorId != null && authorId != book.AuthorId)
+            {
+                throw new BadRequestOperationException("URL author id and Book.AuthorId should be equal");
+            }
+
+            book.AuthorId = authorId;
+            var bookCreated = libraryRepository.CreateBook(book);
+            return bookCreated;
         }
 
         public Book EditBook(int authorId, int id, Book book)

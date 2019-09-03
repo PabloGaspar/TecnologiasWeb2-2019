@@ -94,6 +94,17 @@ namespace LibraryAPI.Controllers
         [HttpPut("{authorId}")]
         public ActionResult<Author> Update(int authorId, [FromBody] Author author)
         {
+            if (!ModelState.IsValid)
+            {
+                foreach (var pair in ModelState)
+                {
+                    if (pair.Key == nameof(author.Nationallity) && pair.Value.Errors.Count > 0)
+                    {
+                        return BadRequest(pair.Value.Errors);
+                    }
+                }
+            }
+
             try
             {
                 return Ok(this.authorsService.UpdateAuthor(authorId, author));

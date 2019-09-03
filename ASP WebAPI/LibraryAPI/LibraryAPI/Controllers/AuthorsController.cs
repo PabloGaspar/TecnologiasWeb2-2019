@@ -15,7 +15,7 @@ using InvalidOperationException = LibraryAPI.Exceptions.InvalidOperationExceptio
 namespace LibraryAPI.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]
+    //[ApiController]
     public class AuthorsController : ControllerBase
     {
         private IAuthorsService authorsService;
@@ -63,8 +63,13 @@ namespace LibraryAPI.Controllers
         }
 
         [HttpPost]
-        public ActionResult<Author> Post(Author author)
+        public ActionResult<Author> Post([FromBody] Author author)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var postedAuthor = this.authorsService.AddAuthor(author);
             return Created($"/api/authors/{postedAuthor.Id}", postedAuthor);
         }
@@ -87,7 +92,7 @@ namespace LibraryAPI.Controllers
         }
 
         [HttpPut("{authorId}")]
-        public ActionResult<Author> Update(int authorId, Author author)
+        public ActionResult<Author> Update(int authorId, [FromBody] Author author)
         {
             try
             {

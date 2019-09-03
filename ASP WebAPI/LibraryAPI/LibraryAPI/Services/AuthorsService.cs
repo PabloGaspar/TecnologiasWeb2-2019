@@ -105,7 +105,7 @@ namespace LibraryAPI.Services
             }
 
             author.Id = id;
-            return authorsRepository.UpdateAuthor(authorToUpdate);
+            return authorsRepository.UpdateAuthor(author);
         }
 
         public bool DeleteAuthor(int id)

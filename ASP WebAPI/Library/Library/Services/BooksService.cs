@@ -41,8 +41,7 @@ namespace Library.Services
 
         public IEnumerable<Book> GetBooks(int authorId)
         {
-            //another comment
-            //new coment
+            
             validateAuthor(authorId);
             return libraryRepository.GetBooks().Where(b => b.AuthorId == authorId);
         }

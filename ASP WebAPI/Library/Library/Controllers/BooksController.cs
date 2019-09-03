@@ -39,6 +39,11 @@ namespace Library.Controllers
         [HttpPost()]
         public ActionResult<Book> PostBook(int authorId, [FromBody] Book book)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             try
             {
                 var bookCreated = booksService.AddBook(authorId, book);

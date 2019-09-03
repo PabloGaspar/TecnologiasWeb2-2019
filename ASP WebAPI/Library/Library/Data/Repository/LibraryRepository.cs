@@ -97,9 +97,15 @@ namespace Library.Data.Repository
             throw new NotImplementedException();
         }
 
-        public Author GetAuthor(int id)
+        public Author GetAuthor(int id, bool showBooks)
         {
-            return authors.SingleOrDefault(a => a.id == id);
+            var author = authors.SingleOrDefault(a => a.id == id);
+            if (showBooks)
+            {
+                author.Books = books.Where(b => b.AuthorId == id);
+
+            }
+            return author;
         }
 
         public IEnumerable<Author> GetAuthors()

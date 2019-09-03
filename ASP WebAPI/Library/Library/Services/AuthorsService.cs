@@ -36,9 +36,11 @@ namespace Library.Services
             return libraryRepository.DeleteAuhor(id);
         }
 
-        public Author GetAuthor(int id)
+        public Author GetAuthor(int id, bool showBooks)
         {
-            return validatAuthorId(id);
+            validatAuthorId(id);
+            var author = libraryRepository.GetAuthor(id, showBooks);
+            return author;
         }
 
         public IEnumerable<Author> GetAuthors(string orderBy)
@@ -64,6 +66,7 @@ namespace Library.Services
 
         public Author UpdateAuthor(int id, Author newAuthor)
         {
+            //nada  q ver
             validatAuthorId(id);
 
             if (newAuthor.id == null)
@@ -79,13 +82,14 @@ namespace Library.Services
             return libraryRepository.UpdateAuthor(newAuthor);
         }
 
-        private Author validatAuthorId(int id)
+        private Author validatAuthorId(int id, bool showBooks = false)
         {
             var author = libraryRepository.GetAuthor(id);
             if (author == null)
             {
                 throw new NotFoundItemException($"cannot found author with id {id}");
             }
+            
             return author;
         }
     }

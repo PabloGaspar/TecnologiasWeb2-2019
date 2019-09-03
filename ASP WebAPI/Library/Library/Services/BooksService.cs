@@ -33,6 +33,7 @@ namespace Library.Services
 
         public IEnumerable<Book> GetBooks(int authorId)
         {
+            
             validateAuthor(authorId);
             return libraryRepository.GetBooks().Where(b => b.AuthorId == authorId);
         }

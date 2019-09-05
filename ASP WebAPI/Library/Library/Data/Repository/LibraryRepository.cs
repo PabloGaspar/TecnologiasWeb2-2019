@@ -83,7 +83,11 @@ namespace Library.Data.Repository
 
         public Book CreateBook(Book book)
         {
-            throw new NotImplementedException();
+            var latestBook = books.OrderByDescending(b => b.Id).FirstOrDefault();
+            var nextBookId = latestBook == null ? 1 : latestBook.Id + 1;
+            book.Id = nextBookId;
+            books.Add(book);
+            return book;
         }
 
         public bool DeleteAuhor(int id)

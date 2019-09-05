@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace Library.Controllers
 {
     [Route("api/authors/{authorId:int}/books")]
-    public class BooksController: ControllerBase
+    public class BooksController : ControllerBase
     {
         private IBooksService booksService;
         public BooksController(IBooksService booksService)
@@ -24,6 +24,34 @@ namespace Library.Controllers
             {
                 var books = booksService.GetBooks(authorId);
                 return Ok(books);
+            }
+            catch (NotFoundItemException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        [HttpPost()]
+        public ActionResult<Book> PostBook(int authorId, [FromBody] Book book)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                var bookCreated = booksService.AddBook(authorId, book);
+                return Created($"/api/authors/{authorId}/books/{book.Id}", bookCreated);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
             }
             catch (NotFoundItemException ex)
             {

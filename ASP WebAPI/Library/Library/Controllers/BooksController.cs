@@ -1,6 +1,7 @@
 ﻿using Library.Exceptions;
 using Library.Models;
 using Library.Services;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -17,7 +18,7 @@ namespace Library.Controllers
         {
             this.booksService = booksService;
         }
-        [HttpGet]
+        [HttpGet()]
         public ActionResult<IEnumerable<Book>> getBooks(int authorId)
         {
             try
@@ -57,10 +58,32 @@ namespace Library.Controllers
             {
                 return NotFound(ex.Message);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
 
-                throw;
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpPut("{id:int}")]
+        public ActionResult<Book> PutBook(int authorId, int id, [FromBody] Book book)
+        {
+            try
+            {
+                return booksService.EditBook(authorId, id, book);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (NotFoundItemException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
     }

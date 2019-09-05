@@ -142,7 +142,11 @@ namespace Library.Data.Repository
 
         public Book UpdateBook(Book book)
         {
-            throw new NotImplementedException();
+            var bookToUpdate = books.Single(b => b.Id == book.Id);
+            bookToUpdate.Pages = book.Pages;
+            bookToUpdate.Tittle = book.Tittle;
+            bookToUpdate.Genre = book.Genre;
+            return bookToUpdate;
         }
     }
 }

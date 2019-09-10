@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -14,6 +15,7 @@ namespace Library.Models
         [Range(1,120)]
         public int Age { get; set; }
         [Required]
+        //[JsonIgnore]
         public string LastName { get; set; }
         [StringLength(20, ErrorMessage = "error {0} There isn't a country name with more than {1} min is {2}", MinimumLength = 2)]
         public string Nationality { get; set; }

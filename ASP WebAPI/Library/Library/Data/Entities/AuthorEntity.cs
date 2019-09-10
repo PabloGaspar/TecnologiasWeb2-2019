@@ -16,6 +16,6 @@ namespace Library.Data.Entities
         public string LastName { get; set; }
         public string Nationallity { get; set; }
         public int Age { get; set; }
-        public virtual IEnumerable<BookEntity> Books { get; set; }
+        public virtual ICollection<BookEntity> Books { get; set; }
     }
 }

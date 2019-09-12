@@ -128,7 +128,7 @@ namespace Library.Data.Repository
 
         public async Task<bool> SaveChangesAsync()
         {
-            throw new NotImplementedException();
+            return (await libraryDbContext.SaveChangesAsync()) > 0;
         }
 
         public Author UpdateAuthor(Author author)

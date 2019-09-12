@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
+using Library.Data.Entities;
 using Library.Data.Repository;
 using Library.Exceptions;
 using Library.Models;
@@ -14,16 +16,24 @@ namespace Library.Services
     {
         private HashSet<string> allowedOrderByValues;
         private ILibraryRepository libraryRepository;
-        public AuthorsService(ILibraryRepository libraryRepository)
+        private readonly IMapper mapper;
+        public AuthorsService(ILibraryRepository libraryRepository, IMapper mapper)
         {
             this.libraryRepository = libraryRepository;
+            this.mapper = mapper;
             allowedOrderByValues = new HashSet<string>() { "name", "lastname", "age", "id" };
         }
 
-        public Author CreateAuthor(Author newAuthor)
+        public async Task<Author> CreateAuthorAsync(Author newAuthor)
         {
-            newAuthor.id = 0;
-           return  libraryRepository.CreateAuthor(newAuthor);
+            var authorEntity = mapper.Map<AuthorEntity>(newAuthor);
+            libraryRepository.CreateAuthor(authorEntity);
+            if (await libraryRepository.SaveChangesAsync())
+            {
+                return mapper.Map<Author>(authorEntity);
+            }
+
+            throw new Exception("There were an error with the DB");
         }
 
         public bool DeleteAuthor(int id)

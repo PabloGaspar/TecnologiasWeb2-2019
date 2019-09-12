@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Library.Data.Entities;
 using Library.Models;
 
 namespace Library.Data.Repository
@@ -10,8 +11,10 @@ namespace Library.Data.Repository
     {
         private List<Author> authors;
         private List<Book> books;
-        public LibraryRepository()
+        private LibraryDbContext libraryDbContext;
+        public LibraryRepository(LibraryDbContext libraryDbContext)
         {
+            this.libraryDbContext = libraryDbContext;
             authors = new List<Author>()
             {
                 new Author()
@@ -72,13 +75,9 @@ namespace Library.Data.Repository
             };
 
         }
-        public Author CreateAuthor(Author author)
+        public void CreateAuthor(AuthorEntity author)
         {
-            var lastAuthor = authors.OrderByDescending(a => a.id).FirstOrDefault();
-            var nextID = lastAuthor == null ? 1 : lastAuthor.id + 1;
-            author.id = nextID;
-            authors.Add(author);
-            return author;
+            libraryDbContext.Authors.Add(author);
         }
 
         public Book CreateBook(Book book)
@@ -125,6 +124,11 @@ namespace Library.Data.Repository
         public IEnumerable<Book> GetBooks()
         {
             return books;
+        }
+
+        public async Task<bool> SaveChangesAsync()
+        {
+            throw new NotImplementedException();
         }
 
         public Author UpdateAuthor(Author author)

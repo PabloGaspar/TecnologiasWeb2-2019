@@ -56,14 +56,14 @@ namespace Library.Controllers
             }
         }
         [HttpPost]
-        public ActionResult<Author> PostAuthor([FromBody] Author author)
+        public async Task<ActionResult<Author>> PostAuthor([FromBody] Author author)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var createdAuthor = authorsService.CreateAuthor(author);
+            var createdAuthor = await authorsService.CreateAuthorAsync(author);
             return Created($"/api/authors/{createdAuthor.id}", createdAuthor);
         }
         [HttpDelete("{id:int}")]

@@ -31,7 +31,7 @@ namespace LibraryAPI.Services
         };
 
 
-        public IEnumerable<Author> GetAuthors(string orderBy, bool showBooks)
+        public async Task<IEnumerable<Author>> GetAuthorsAsync(string orderBy, bool showBooks)
         {
             orderBy = orderBy.ToLower();
             if (!allowedOrderByQueries.Contains(orderBy))
@@ -39,54 +39,20 @@ namespace LibraryAPI.Services
                 throw new InvalidOperationException($"Invalid \" {orderBy} \" orderBy query param. The allowed values are {string.Join(",", allowedOrderByQueries)}");
             }
 
-            var authors = authorsRepository.GetAuthors();
-
-            foreach (var author in authors)
-            {
-                if (showBooks)
-                {
-                    author.books = authorsRepository.GetBooks().Where(b => b.AuthorId == author.Id);
-                }
-                else
-                {
-                    author.books = null;
-                }
-            }
-
-            switch (orderBy)
-            {
-                case "id":
-                    return authors.OrderBy(a => a.Id);
-                case "name":
-                    return authors.OrderBy(a => a.Name);
-                case "lastname":
-                    return authors.OrderBy(a => a.LastName);
-                case "nationallity":
-                    return authors.OrderBy(a => a.Name);
-                default:
-                    return authors;
-            }
+            var authorsEntities = await authorsRepository.GetAuthors(orderBy, showBooks);
+            return mapper.Map<IEnumerable<Author>>(authorsEntities);
         }
 
-        public Author GetAuthor(int id, bool showBooks)
+        public async Task<Author> GetAuthorAsync(int id, bool showBooks)
         {
-            var author = authorsRepository.GetAuthor(id);
+            var authorEntity = await authorsRepository.GetAuthorAsync(id, showBooks);
 
-            if (author == null)
+            if (authorEntity == null)
             {
                 throw new NotFoundException("author not found");
             }
 
-            if (showBooks)
-            {
-                author.books = authorsRepository.GetBooks().Where(b => b.AuthorId == author.Id);
-            }
-            else
-            {
-                author.books = null;
-            }
-
-            return author;
+            return mapper.Map<Author>(authorEntity);
         }
 
         public async Task<Author> AddAuthorAsync(Author author)
@@ -102,31 +68,46 @@ namespace LibraryAPI.Services
             throw new Exception("There were an error with the DB");
         }
 
-        public Author UpdateAuthor(int id, Author author)
+        public async Task<Author> UpdateAuthorAsync(int id, Author author)
         {
             if (id != author.Id)
             {
                 throw new InvalidOperationException("URL id needs to be the same as Author id");
             }
-
-            var authorToUpdate = authorsRepository.GetAuthor(id);
-            if (authorToUpdate == null)
-            {
-                throw new NotFoundException("invalid author to update");
-            }
+            await ValidateAuthor(id);
 
             author.Id = id;
-            return authorsRepository.UpdateAuthor(author);
+            var authorEntity = mapper.Map<AuthorEntity>(author);
+            authorsRepository.UpdateAuthor(authorEntity);
+            if (await authorsRepository.SaveChangesAsync())
+            {
+                return mapper.Map<Author>(authorEntity);
+            }
+
+            throw new Exception("There were an error with the DB");
+
+
         }
 
-        public bool DeleteAuthor(int id)
+        public async Task<bool> DeleteAuthorAsync(int id)
         {
-            var authorToDelete = authorsRepository.GetAuthors().SingleOrDefault(a => a.Id == id);
-            if (authorToDelete == null)
+            await ValidateAuthor(id);
+            await authorsRepository.DeleteAuthorAsync(id);
+            if (await authorsRepository.SaveChangesAsync())
+            {
+                return true;
+            }
+            return false;
+        }
+
+        private async Task  ValidateAuthor(int id)
+        {
+            var author = await authorsRepository.GetAuthorAsync(id);
+            if (author == null)
             {
                 throw new NotFoundException("invalid author to delete");
             }
-            return authorsRepository.DeleteAuthor(id);
+            authorsRepository.DetachEntity(author);
         }
     }
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using LibraryAPI.Data.Entities;
 using LibraryAPI.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace LibraryAPI.Data.Repository
 {
@@ -11,38 +12,11 @@ namespace LibraryAPI.Data.Repository
 
     public class LibraryRepository : ILibraryRepository
     {
-        private List<Author> authors = new List<Author>();
         private List<Book> books = new List<Book>();
         private LibraryDBContext libraryDBContext;
         public LibraryRepository(LibraryDBContext libraryDBContext)
         {
             this.libraryDBContext = libraryDBContext;
-            authors.Add(new Author()
-            {
-                Id = 1,
-                Age = 44,
-                LastName = "Saint-Exupery",
-                Name = "Antoine",
-                Nationallity = "France"
-            });
-
-            authors.Add(new Author()
-            {
-                Id = 2,
-                Age = 85,
-                LastName = "Tolkien",
-                Name = "JRR",
-                Nationallity = "South Africa",
-            });
-
-            authors.Add(new Author()
-            {
-                Id = 3,
-                Age = 75,
-                LastName = "Lovecraft",
-                Name = "HP",
-                Nationallity = "USA",
-            });
 
             books.Add(new Book()
             {
@@ -109,11 +83,10 @@ namespace LibraryAPI.Data.Repository
             return book;
         }
 
-        public bool DeleteAuthor(int id)
+        public async Task DeleteAuthorAsync(int id)
         {
-            var author = authors.Single(a => a.Id == id);
-            authors.Remove(author);
-            return true;
+            var author = await libraryDBContext.Authors.SingleAsync(a => a.Id == id);
+            libraryDBContext.Authors.Remove(author);
         }
 
         public bool DeleteBook(int id)
@@ -123,14 +96,51 @@ namespace LibraryAPI.Data.Repository
             return true;
         }
 
-        public Author GetAuthor(int id)
+        public void DetachEntity<T>(T entity) where T : class
         {
-            return authors.SingleOrDefault(a => a.Id == id);
+            libraryDBContext.Entry(entity).State = EntityState.Detached;
         }
 
-        public IEnumerable<Author> GetAuthors()
+        public async Task<AuthorEntity> GetAuthorAsync(int id, bool showBooks)
         {
-            return authors;
+            IQueryable<AuthorEntity> query = libraryDBContext.Authors;
+
+            if (showBooks)
+            {
+                query = query.Include(a => a.Books);
+            }
+
+            return await query.SingleOrDefaultAsync(a => a.Id == id);
+        }
+
+        public async Task<IEnumerable<AuthorEntity>> GetAuthors(string orderBy, bool showBooks)
+        {
+            IQueryable<AuthorEntity> query = libraryDBContext.Authors;
+
+            if (showBooks)
+            {
+                query = query.Include(a => a.Books);
+            }
+
+            switch (orderBy)
+            {
+                case "id":
+                    query = query.OrderBy(a => a.Id);
+                    break;
+                case "name":
+                    query = query.OrderBy(a => a.Name);
+                    break;
+                case "lastname":
+                    query = query.OrderBy(a => a.LastName);
+                    break;
+                case "nationallity":
+                    query = query.OrderBy(a => a.Name);
+                    break;
+                default:
+                    break;
+            }
+
+           return await query.ToArrayAsync();
         }
 
         public Book GetBook(int id)
@@ -148,14 +158,15 @@ namespace LibraryAPI.Data.Repository
             return (await libraryDBContext.SaveChangesAsync()) > 0;
         }
 
-        public Author UpdateAuthor(Author author)
+        public void UpdateAuthor(AuthorEntity author)
         {
-            var authorToUpdate = authors.Single(a => a.Id == author.Id);
+            /*var authorToUpdate = libraryDBContext.Authors.Single(a => a.Id == author.Id);
             authorToUpdate.LastName = author.LastName;
             authorToUpdate.Name = author.Name;
             authorToUpdate.Nationallity = author.Nationallity;
-            authorToUpdate.Age = author.Age;
-            return author;
+            authorToUpdate.Age = author.Age;*/
+
+            libraryDBContext.Authors.Update(author);
         }
 
         public Book UpdateBook(Book book)

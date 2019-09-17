@@ -1,0 +1,98 @@
+{
+	"id": "4f73b962-0faa-4091-ba94-9bbb8ab4d219",
+	"name": "LibraryAPI",
+	"description": null,
+	"auth": null,
+	"events": null,
+	"variables": null,
+	"order": [
+		"29b17afe-df8f-42ce-8be9-86772488dc87",
+		"5866f991-bef1-44db-9e29-f5ab78992e7c",
+		"ad342435-add0-4c36-8acc-b0b62dbd64c0",
+		"a78f3bee-41f3-41b0-8dab-d3c4b8425b32"
+	],
+	"folders_order": [],
+	"folders": [],
+	"requests": [
+		{
+			"id": "29b17afe-df8f-42ce-8be9-86772488dc87",
+			"name": "GET AUTHORS",
+			"url": "{{host}}/api/authors",
+			"description": "",
+			"data": null,
+			"dataMode": "params",
+			"headerData": [],
+			"method": "GET",
+			"pathVariableData": [],
+			"queryParams": [],
+			"auth": null,
+			"events": [],
+			"folder": null,
+			"headers": "",
+			"pathVariables": {}
+		},
+		{
+			"id": "5866f991-bef1-44db-9e29-f5ab78992e7c",
+			"name": "DELETE AUTHOR",
+			"url": "{{host}}/api/authors/1",
+			"description": "",
+			"data": null,
+			"dataMode": "params",
+			"headerData": [],
+			"method": "DELETE",
+			"pathVariableData": [],
+			"queryParams": [],
+			"auth": null,
+			"events": [],
+			"folder": null,
+			"headers": "",
+			"pathVariables": {}
+		},
+		{
+			"id": "a78f3bee-41f3-41b0-8dab-d3c4b8425b32",
+			"name": "ADD AUTHOR",
+			"url": "{{host}}/api/authors",
+			"description": "",
+			"data": [],
+			"dataMode": "raw",
+			"headerData": [
+				{
+					"key": "Content-Type",
+					"value": "application/json"
+				}
+			],
+			"method": "POST",
+			"pathVariableData": [],
+			"queryParams": [],
+			"auth": null,
+			"events": [],
+			"folder": null,
+			"rawModeData": "{\n    \"name\": \"Stephen\",\n    \"age\": 85,\n    \"lastName\": \"King \",\n    \"nationallity\": \"US\"\n}",
+			"headers": "Content-Type: application/json\n",
+			"pathVariables": {}
+		},
+		{
+			"id": "ad342435-add0-4c36-8acc-b0b62dbd64c0",
+			"name": "UPDATE AUTHOR",
+			"url": "{{host}}/api/authors/1",
+			"description": "",
+			"data": [],
+			"dataMode": "raw",
+			"headerData": [
+				{
+					"key": "Content-Type",
+					"value": "application/json"
+				}
+			],
+			"method": "PUT",
+			"pathVariableData": [],
+			"queryParams": [],
+			"auth": null,
+			"events": [],
+			"folder": null,
+			"rawModeData": " {\n        \"id\": 1,\n        \"name\": \"JRR\",\n        \"age\": 87,\n        \"lastName\": \"Tolkien\",\n        \"nationality\": \"Bolivia\"\n    }",
+			"headers": "Content-Type: application/json\n",
+			"pathVariables": {}
+		}
+	]
+}

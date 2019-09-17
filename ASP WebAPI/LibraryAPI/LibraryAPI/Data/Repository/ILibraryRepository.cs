@@ -10,10 +10,10 @@ namespace LibraryAPI.Data.Repository
     public interface ILibraryRepository
     {
         //authors
-        Author GetAuthor(int id);
-        IEnumerable<Author> GetAuthors();
-        bool DeleteAuthor(int id);
-        Author UpdateAuthor(Author author);
+        Task<AuthorEntity> GetAuthorAsync(int id, bool showBooks = false);
+        Task<IEnumerable<AuthorEntity>> GetAuthors(string orderBy = "id", bool showBooks = false);
+        Task DeleteAuthorAsync(int id);
+        void UpdateAuthor(AuthorEntity author);
         void CreateAuthor(AuthorEntity author);
 
         //books
@@ -25,5 +25,6 @@ namespace LibraryAPI.Data.Repository
 
         //general
         Task<bool> SaveChangesAsync();
+        void DetachEntity<T>(T entity) where T : class;
     }
 }

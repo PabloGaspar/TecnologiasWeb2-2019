@@ -26,11 +26,11 @@ namespace LibraryAPI.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<Author>> Get(string orderBy = "Id", bool showBooks = false)
+        public async Task<ActionResult<IEnumerable<Author>>> Get(string orderBy = "Id", bool showBooks = false)
         {
             try
             {
-                return Ok(authorsService.GetAuthors(orderBy, showBooks));
+                return Ok(await authorsService.GetAuthorsAsync(orderBy, showBooks));
             }
             catch (InvalidOperationException ex)
             {
@@ -44,11 +44,11 @@ namespace LibraryAPI.Controllers
         }
 
         [HttpGet("{authorId:int}")]
-        public ActionResult<Author> Get(int authorId, bool showBooks = false)
+        public async Task<ActionResult<Author>> Get(int authorId, bool showBooks = false)
         {
             try
             {
-                var author = this.authorsService.GetAuthor(authorId, showBooks);
+                var author =  await this.authorsService.GetAuthorAsync(authorId, showBooks);
                 return Ok(author);
 
             }
@@ -75,11 +75,11 @@ namespace LibraryAPI.Controllers
         }
 
         [HttpDelete("{authorId:int}")]
-        public ActionResult<bool> Delete(int authorId)
+        public async Task<ActionResult<bool>> Delete(int authorId)
         {
             try
             {
-                return Ok(this.authorsService.DeleteAuthor(authorId));
+                return Ok(await this.authorsService.DeleteAuthorAsync(authorId));
             }
             catch (NotFoundException ex)
             {
@@ -92,7 +92,7 @@ namespace LibraryAPI.Controllers
         }
 
         [HttpPut("{authorId}")]
-        public ActionResult<Author> Update(int authorId, [FromBody] Author author)
+        public async Task<ActionResult<Author>> Update(int authorId, [FromBody] Author author)
         {
             if (!ModelState.IsValid)
             {
@@ -107,7 +107,8 @@ namespace LibraryAPI.Controllers
 
             try
             {
-                return Ok(this.authorsService.UpdateAuthor(authorId, author));
+                var authorUpdated = await this.authorsService.UpdateAuthorAsync(authorId, author);
+                return Ok(authorUpdated);
             }
             catch (InvalidOperationException ex)
             {

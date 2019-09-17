@@ -75,11 +75,11 @@ namespace LibraryAPI.Services
 
         private void ValidateAuthor(int authorId)
         {
-            var author = authorsRepository.GetAuthor(authorId);
+            /*var author = authorsRepository.GetAuthor(authorId);
             if (author == null)
             {
                 throw new NotFoundException($"author with id {authorId} not found");
-            }
+            }*/
         }
     }
 }

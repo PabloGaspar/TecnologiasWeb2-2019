@@ -8,10 +8,10 @@ namespace LibraryAPI.Services
 {
     public interface IAuthorsService
     {
-        IEnumerable<Author> GetAuthors(string orderBy, bool showBooks);
-        Author GetAuthor(int id, bool showBooks);
+        Task<IEnumerable<Author>> GetAuthorsAsync(string orderBy, bool showBooks);
+        Task<Author> GetAuthorAsync(int id, bool showBooks);
         Task<Author> AddAuthorAsync(Author author);
-        Author UpdateAuthor(int id, Author author);
-        bool DeleteAuthor(int id);
+        Task<Author> UpdateAuthorAsync(int id, Author author);
+        Task<bool> DeleteAuthorAsync(int id);
     }
 }

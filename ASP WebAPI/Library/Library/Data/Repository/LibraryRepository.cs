@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Library.Data.Entities;
 using Library.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Library.Data.Repository
 {
@@ -23,7 +24,7 @@ namespace Library.Data.Repository
                     LastName = "Tolkien",
                     Age = 87,
                     Name = "JRR",
-                    Nationality = "south africa"
+                    Nationallity = "south africa"
                 },
                 new Author()
                 {
@@ -31,7 +32,7 @@ namespace Library.Data.Repository
                     LastName = "King",
                     Age = 65,
                     Name = "Sthephen",
-                    Nationality = "USA"
+                    Nationallity = "USA"
                 }
 
             };
@@ -111,9 +112,31 @@ namespace Library.Data.Repository
             return author;
         }
 
-        public IEnumerable<Author> GetAuthors()
+        public async Task<IEnumerable<AuthorEntity>> GetAuthorsAsync(bool showBooks, string orderBy)
         {
-            return authors;
+            IQueryable<AuthorEntity> query = libraryDbContext.Authors;
+            if (showBooks)
+            {
+                query = query.Include(a => a.Books);
+            }
+            
+            switch (orderBy)
+            {
+                case "name":
+                    query = query.OrderBy(a => a.Name);
+                    break;
+                case "lastname":
+                    query = query.OrderBy(a => a.LastName);
+                    break;
+                case "age":
+                    query = query.OrderBy(a => a.Age);
+                    break;
+                default:
+                    query = query.OrderBy(a => a.Id);
+                    break;
+            }
+
+            return await query.ToArrayAsync();
         }
 
         public Book GetBook(int id)
@@ -137,7 +160,7 @@ namespace Library.Data.Repository
             authorToUpdate.LastName = author.LastName;
             authorToUpdate.Name = author.Name;
             authorToUpdate.Age = author.Age;
-            authorToUpdate.Nationality = author.Nationality;
+            authorToUpdate.Nationallity = author.Nationallity;
 
             return authorToUpdate;
 

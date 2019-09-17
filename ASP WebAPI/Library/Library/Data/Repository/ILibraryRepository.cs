@@ -13,7 +13,7 @@ namespace Library.Data.Repository
 
         //authors
         Author GetAuthor(int id, bool showBooks = false);
-        IEnumerable<Author> GetAuthors();
+        Task<IEnumerable<AuthorEntity>> GetAuthorsAsync(bool showBooks = false, string orderBy = "id");
         bool DeleteAuhor(int id);
         Author UpdateAuthor(Author author);
         void CreateAuthor(AuthorEntity author);

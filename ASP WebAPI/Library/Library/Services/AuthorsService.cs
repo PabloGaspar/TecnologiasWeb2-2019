@@ -53,25 +53,15 @@ namespace Library.Services
             return author;
         }
 
-        public IEnumerable<Author> GetAuthors(string orderBy)
+        public async Task<IEnumerable<Author>> GetAuthorsAsync(bool showBooks, string orderBy)
         {
             var orderByLower = orderBy.ToLower();
             if (!allowedOrderByValues.Contains(orderByLower))
             {
                 throw new BadRequestOperationException($"invalid Order By value : {orderBy} the only allowed values are {string.Join(", ", allowedOrderByValues)}");
             }
-            var authors = libraryRepository.GetAuthors();
-            switch (orderByLower)
-            {
-                case "name":
-                    return authors.OrderBy(a => a.Name);
-                case "lastname":
-                    return authors.OrderBy(a => a.LastName);
-                case "age":
-                    return authors.OrderBy(a => a.Age);
-                default:
-                    return authors.OrderBy(a => a.id); ;
-            }
+            var authorsEntities = await libraryRepository.GetAuthorsAsync(showBooks, orderByLower);
+            return mapper.Map<IEnumerable<Author>>(authorsEntities);
         }
 
         public Author UpdateAuthor(int id, Author newAuthor)

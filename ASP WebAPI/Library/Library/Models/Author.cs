@@ -18,7 +18,7 @@ namespace Library.Models
         //[JsonIgnore]
         public string LastName { get; set; }
         [StringLength(20, ErrorMessage = "error {0} There isn't a country name with more than {1} min is {2}", MinimumLength = 2)]
-        public string Nationality { get; set; }
+        public string Nationallity { get; set; }
         public IEnumerable<Book> Books { get; set; }
     }
 }

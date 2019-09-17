@@ -21,11 +21,11 @@ namespace Library.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<Author>> GetAuthors(string orderBy = "id")
+        public async Task<ActionResult<IEnumerable<Author>>> GetAuthors(bool showBooks = false, string orderBy = "id")
         {
             try
             {
-                return Ok(authorsService.GetAuthors(orderBy));
+                return Ok(await authorsService.GetAuthorsAsync(showBooks, orderBy));
             }
             catch (BadRequestOperationException ex)
             {
@@ -90,7 +90,7 @@ namespace Library.Controllers
         {
             if (!ModelState.IsValid)
             {
-                var natinallity = ModelState[nameof(author.Nationality)];
+                var natinallity = ModelState[nameof(author.Nationallity)];
                 
                 if (natinallity != null && natinallity.Errors.Any())
                 {

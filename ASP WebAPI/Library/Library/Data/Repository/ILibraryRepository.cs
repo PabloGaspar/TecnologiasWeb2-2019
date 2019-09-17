@@ -1,4 +1,5 @@
-﻿using Library.Models;
+﻿using Library.Data.Entities;
+using Library.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,13 +9,14 @@ namespace Library.Data.Repository
 {
     public interface ILibraryRepository
     {
+        Task<bool> SaveChangesAsync();
 
         //authors
-        Author GetAuthor(int id);
+        Author GetAuthor(int id, bool showBooks = false);
         IEnumerable<Author> GetAuthors();
         bool DeleteAuhor(int id);
         Author UpdateAuthor(Author author);
-        Author CreateAuthor(Author author);
+        void CreateAuthor(AuthorEntity author);
 
         //books
 

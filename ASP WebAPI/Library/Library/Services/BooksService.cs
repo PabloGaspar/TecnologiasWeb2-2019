@@ -18,12 +18,35 @@ namespace Library.Services
 
         public Book AddBook(int authorId, Book book)
         {
-            throw new NotImplementedException();
+            ValidateAuthor(authorId);
+            if (book.AuthorId != null && authorId != book.AuthorId)
+            {
+                throw new BadRequestOperationException("URL author id and Book.AuthorId should be equal");
+            }
+
+            book.AuthorId = authorId;
+            var bookCreated = libraryRepository.CreateBook(book);
+            return bookCreated;
         }
 
         public Book EditBook(int authorId, int id, Book book)
         {
-            throw new NotImplementedException();
+            ValidateAuthor(authorId);
+            if (book.Id != null &&book.Id != id)
+            {
+                throw new InvalidOperationException("book URL id and book body id should be the same");
+            }
+            
+            ValidateBook(id);
+
+            var bookToupdate = libraryRepository.GetBook(id);
+            if (bookToupdate.AuthorId != authorId)
+            {
+                throw new InvalidOperationException($"Author with id {authorId} doesn't have a book with id {id}");
+            }
+
+            book.AuthorId = authorId;
+            return libraryRepository.UpdateBook(book);
         }
 
         public Book GetBook(int authorId, int id)
@@ -33,9 +56,8 @@ namespace Library.Services
 
         public IEnumerable<Book> GetBooks(int authorId)
         {
-            //another comment
-            //new coment
-            validateAuthor(authorId);
+            
+            ValidateAuthor(authorId);
             return libraryRepository.GetBooks().Where(b => b.AuthorId == authorId);
         }
 
@@ -44,7 +66,7 @@ namespace Library.Services
             throw new NotImplementedException();
         }
 
-        private bool validateAuthor(int id)
+        private bool ValidateAuthor(int id)
         {
             var author = libraryRepository.GetAuthor(id);
             if (author == null)
@@ -54,5 +76,18 @@ namespace Library.Services
 
             return true;
         }
+
+        private bool ValidateBook(int id)
+        {
+            var book = libraryRepository.GetBook(id);
+            if (book == null)
+            {
+                throw new NotFoundItemException($"Book not found with id {id}");
+            }
+
+            return true;
+        }
     }
+
+  
 }

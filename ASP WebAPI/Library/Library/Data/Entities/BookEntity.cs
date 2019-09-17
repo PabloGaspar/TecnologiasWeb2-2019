@@ -1,21 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Library.Models
+namespace Library.Data.Entities
 {
-    public class Book
+    public class BookEntity
     {
-        public int? Id { get; set; }
+        [Key]
+        [Required]
+        public int Id { get; set; }
         [Required]
         public string Tittle { get; set; }
-        [Required]
         public int Pages { get; set; }
         [Required]
-        [StringLength(30)]
         public string Genre { get; set; }
-        public int? AuthorId { get; set; }
+
+        [ForeignKey("AuthorId")]
+        public virtual AuthorEntity Author { get; set; }
+
     }
 }

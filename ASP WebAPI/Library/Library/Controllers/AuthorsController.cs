@@ -39,11 +39,11 @@ namespace Library.Controllers
         }
 
         [HttpGet("{id}")]
-        public ActionResult<Author> GetAuthor(int id)
+        public ActionResult<Author> GetAuthor(int id, bool showBooks = false )
         {
             try
             {
-                return Ok(authorsService.GetAuthor(id));
+                return Ok(authorsService.GetAuthor(id, showBooks));
             }
             catch (NotFoundItemException ex)
             {
@@ -56,9 +56,14 @@ namespace Library.Controllers
             }
         }
         [HttpPost]
-        public ActionResult<Author> PostAuthor([FromBody] Author author)
+        public async Task<ActionResult<Author>> PostAuthor([FromBody] Author author)
         {
-            var createdAuthor = authorsService.CreateAuthor(author);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var createdAuthor = await authorsService.CreateAuthorAsync(author);
             return Created($"/api/authors/{createdAuthor.id}", createdAuthor);
         }
         [HttpDelete("{id:int}")]
@@ -83,6 +88,16 @@ namespace Library.Controllers
         [HttpPut("{id:int}")]
         public ActionResult<Author> PutAuthor(int id, [FromBody]Author author )
         {
+            if (!ModelState.IsValid)
+            {
+                var natinallity = ModelState[nameof(author.Nationality)];
+                
+                if (natinallity != null && natinallity.Errors.Any())
+                {
+                    return BadRequest(natinallity.Errors);
+                }
+            }
+
             try
             {
                 return Ok(authorsService.UpdateAuthor(id, author));

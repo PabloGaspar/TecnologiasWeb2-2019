@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
+using Library.Data.Entities;
 using Library.Data.Repository;
 using Library.Exceptions;
 using Library.Models;
@@ -14,16 +16,24 @@ namespace Library.Services
     {
         private HashSet<string> allowedOrderByValues;
         private ILibraryRepository libraryRepository;
-        public AuthorsService(ILibraryRepository libraryRepository)
+        private readonly IMapper mapper;
+        public AuthorsService(ILibraryRepository libraryRepository, IMapper mapper)
         {
             this.libraryRepository = libraryRepository;
+            this.mapper = mapper;
             allowedOrderByValues = new HashSet<string>() { "name", "lastname", "age", "id" };
         }
 
-        public Author CreateAuthor(Author newAuthor)
+        public async Task<Author> CreateAuthorAsync(Author newAuthor)
         {
-            newAuthor.id = 0;
-           return  libraryRepository.CreateAuthor(newAuthor);
+            var authorEntity = mapper.Map<AuthorEntity>(newAuthor);
+            libraryRepository.CreateAuthor(authorEntity);
+            if (await libraryRepository.SaveChangesAsync())
+            {
+                return mapper.Map<Author>(authorEntity);
+            }
+
+            throw new Exception("There were an error with the DB");
         }
 
         public bool DeleteAuthor(int id)
@@ -36,9 +46,11 @@ namespace Library.Services
             return libraryRepository.DeleteAuhor(id);
         }
 
-        public Author GetAuthor(int id)
+        public Author GetAuthor(int id, bool showBooks)
         {
-            return validatAuthorId(id);
+            validatAuthorId(id);
+            var author = libraryRepository.GetAuthor(id, showBooks);
+            return author;
         }
 
         public IEnumerable<Author> GetAuthors(string orderBy)
@@ -64,6 +76,7 @@ namespace Library.Services
 
         public Author UpdateAuthor(int id, Author newAuthor)
         {
+            //nada  q ver
             validatAuthorId(id);
 
             if (newAuthor.id == null)
@@ -79,13 +92,14 @@ namespace Library.Services
             return libraryRepository.UpdateAuthor(newAuthor);
         }
 
-        private Author validatAuthorId(int id)
+        private Author validatAuthorId(int id, bool showBooks = false)
         {
             var author = libraryRepository.GetAuthor(id);
             if (author == null)
             {
                 throw new NotFoundItemException($"cannot found author with id {id}");
             }
+            
             return author;
         }
     }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Library.Data.Entities;
 using Library.Models;
 
 namespace Library.Data.Repository
@@ -10,8 +11,10 @@ namespace Library.Data.Repository
     {
         private List<Author> authors;
         private List<Book> books;
-        public LibraryRepository()
+        private LibraryDbContext libraryDbContext;
+        public LibraryRepository(LibraryDbContext libraryDbContext)
         {
+            this.libraryDbContext = libraryDbContext;
             authors = new List<Author>()
             {
                 new Author()
@@ -72,18 +75,18 @@ namespace Library.Data.Repository
             };
 
         }
-        public Author CreateAuthor(Author author)
+        public void CreateAuthor(AuthorEntity author)
         {
-            var lastAuthor = authors.OrderByDescending(a => a.id).FirstOrDefault();
-            var nextID = lastAuthor == null ? 1 : lastAuthor.id + 1;
-            author.id = nextID;
-            authors.Add(author);
-            return author;
+            libraryDbContext.Authors.Add(author);
         }
 
         public Book CreateBook(Book book)
         {
-            throw new NotImplementedException();
+            var latestBook = books.OrderByDescending(b => b.Id).FirstOrDefault();
+            var nextBookId = latestBook == null ? 1 : latestBook.Id + 1;
+            book.Id = nextBookId;
+            books.Add(book);
+            return book;
         }
 
         public bool DeleteAuhor(int id)
@@ -97,9 +100,15 @@ namespace Library.Data.Repository
             throw new NotImplementedException();
         }
 
-        public Author GetAuthor(int id)
+        public Author GetAuthor(int id, bool showBooks)
         {
-            return authors.SingleOrDefault(a => a.id == id);
+            var author = authors.SingleOrDefault(a => a.id == id);
+            if (showBooks)
+            {
+                author.Books = books.Where(b => b.AuthorId == id);
+
+            }
+            return author;
         }
 
         public IEnumerable<Author> GetAuthors()
@@ -117,6 +126,11 @@ namespace Library.Data.Repository
             return books;
         }
 
+        public async Task<bool> SaveChangesAsync()
+        {
+            return (await libraryDbContext.SaveChangesAsync()) > 0;
+        }
+
         public Author UpdateAuthor(Author author)
         {
             var authorToUpdate = authors.Single(a => a.id == author.id);
@@ -132,7 +146,11 @@ namespace Library.Data.Repository
 
         public Book UpdateBook(Book book)
         {
-            throw new NotImplementedException();
+            var bookToUpdate = books.Single(b => b.Id == book.Id);
+            bookToUpdate.Pages = book.Pages;
+            bookToUpdate.Tittle = book.Tittle;
+            bookToUpdate.Genre = book.Genre;
+            return bookToUpdate;
         }
     }
 }

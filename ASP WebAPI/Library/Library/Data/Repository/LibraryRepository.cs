@@ -101,15 +101,23 @@ namespace Library.Data.Repository
             throw new NotImplementedException();
         }
 
-        public Author GetAuthor(int id, bool showBooks)
+        public async Task<AuthorEntity> GetAuthorAsync(int id, bool showBooks)
         {
-            var author = authors.SingleOrDefault(a => a.id == id);
+            //var author = authors.SingleOrDefault(a => a.id == id);
+            //if (showBooks)
+            //{
+            //    author.Books = books.Where(b => b.AuthorId == id);
+
+            //}
+            //return author;
+            IQueryable<AuthorEntity> query = libraryDbContext.Authors;
+
             if (showBooks)
             {
-                author.Books = books.Where(b => b.AuthorId == id);
-
+                query = query.Include(a => a.Books);
             }
-            return author;
+
+            return await query.SingleOrDefaultAsync(a => a.Id == id);
         }
 
         public async Task<IEnumerable<AuthorEntity>> GetAuthorsAsync(bool showBooks, string orderBy)

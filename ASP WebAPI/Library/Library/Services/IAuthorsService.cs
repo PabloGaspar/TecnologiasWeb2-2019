@@ -9,7 +9,7 @@ namespace Library.Services
     public interface IAuthorsService
     {
         Task<IEnumerable<Author>> GetAuthorsAsync(bool showBooks, string orderBy);
-        Author GetAuthor(int id, bool showBooks);
+        Task<Author> GetAuthorAsync(int id, bool showBooks);
         Task<Author> CreateAuthorAsync(Author newAuthor);
         bool DeleteAuthor(int id);
         Author UpdateAuthor(int id, Author newAuthor);

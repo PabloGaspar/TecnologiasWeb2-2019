@@ -38,7 +38,7 @@ namespace Library.Services
 
         public bool DeleteAuthor(int id)
         {
-            var authorToDelete = libraryRepository.GetAuthor(id);
+            var authorToDelete = libraryRepository.GetAuthorAsync(id);
             if (authorToDelete == null)
             {
                 throw new NotFoundItemException($"author {id} does not exists");
@@ -46,11 +46,20 @@ namespace Library.Services
             return libraryRepository.DeleteAuhor(id);
         }
 
-        public Author GetAuthor(int id, bool showBooks)
+        public async Task<Author> GetAuthorAsync(int id, bool showBooks)
         {
-            validatAuthorId(id);
-            var author = libraryRepository.GetAuthor(id, showBooks);
-            return author;
+            //validatAuthorId(id);
+            //var author = libraryRepository.GetAuthor(id, showBooks);
+            //return author;
+            var author = await libraryRepository.GetAuthorAsync(id, showBooks);
+
+            if (author == null)
+            {
+                throw new NotFoundItemException("author not found");
+            }
+
+            return mapper.Map<Author>(author);
+
         }
 
         public async Task<IEnumerable<Author>> GetAuthorsAsync(bool showBooks, string orderBy)
@@ -82,9 +91,9 @@ namespace Library.Services
             return libraryRepository.UpdateAuthor(newAuthor);
         }
 
-        private Author validatAuthorId(int id, bool showBooks = false)
+        private Task<AuthorEntity> validatAuthorId(int id, bool showBooks = false)
         {
-            var author = libraryRepository.GetAuthor(id);
+            var author = libraryRepository.GetAuthorAsync(id);
             if (author == null)
             {
                 throw new NotFoundItemException($"cannot found author with id {id}");

@@ -12,7 +12,7 @@ namespace Library.Data.Repository
         Task<bool> SaveChangesAsync();
 
         //authors
-        Author GetAuthor(int id, bool showBooks = false);
+        Task <AuthorEntity> GetAuthorAsync(int id, bool showBooks = false);
         Task<IEnumerable<AuthorEntity>> GetAuthorsAsync(bool showBooks = false, string orderBy = "id");
         bool DeleteAuhor(int id);
         Author UpdateAuthor(Author author);

@@ -39,11 +39,13 @@ namespace Library.Controllers
         }
 
         [HttpGet("{id}")]
-        public ActionResult<Author> GetAuthor(int id, bool showBooks = false )
+        public async Task<ActionResult<Author>> GetAuthorAsync(int id, bool showBooks = false )
         {
             try
             {
-                return Ok(authorsService.GetAuthor(id, showBooks));
+                var author = await authorsService.GetAuthorAsync(id, showBooks);
+                return Ok(author);
+
             }
             catch (NotFoundItemException ex)
             {
@@ -51,9 +53,9 @@ namespace Library.Controllers
             }
             catch (Exception ex)
             {
-
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+                return this.StatusCode(StatusCodes.Status500InternalServerError, $"Something bad happened: {ex.Message}");
             }
+            
         }
         [HttpPost]
         public async Task<ActionResult<Author>> PostAuthor([FromBody] Author author)

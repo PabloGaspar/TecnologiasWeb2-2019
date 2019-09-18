@@ -68,7 +68,7 @@ namespace Library.Services
 
         private bool ValidateAuthor(int id)
         {
-            var author = libraryRepository.GetAuthor(id);
+            var author = libraryRepository.GetAuthorAsync(id);
             if (author == null)
             {
                 throw new NotFoundItemException($"Author not found with id {id}");

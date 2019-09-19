@@ -92,9 +92,9 @@ namespace Library.Services
             return libraryRepository.UpdateAuthor(newAuthor);
         }
 
-        private Task<AuthorEntity> validatAuthorId(int id, bool showBooks = false)
+        private async Task<AuthorEntity> validatAuthorId(int id, bool showBooks = false)
         {
-            var author = libraryRepository.GetAuthorAsync(id);
+            var author = await libraryRepository.GetAuthorAsync(id);
             if (author == null)
             {
                 throw new NotFoundItemException($"cannot found author with id {id}");

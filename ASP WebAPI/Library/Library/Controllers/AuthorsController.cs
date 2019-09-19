@@ -68,15 +68,12 @@ namespace Library.Controllers
             var createdAuthor = await authorsService.CreateAuthorAsync(author);
             return Created($"/api/authors/{createdAuthor.id}", createdAuthor);
         }
-        [HttpDelete("{id:int}")]
-        public ActionResult<bool> DeleteAuthor(int id)
+        [HttpDelete("{Id:int}")]
+        public async Task<ActionResult<bool>> DeleteAuthor(int Id)
         {
             try
             {
-                var result = authorsService.DeleteAuthor(id);
-                if (!result)
-                    return StatusCode(StatusCodes.Status500InternalServerError, "cannot delete author");
-                return Ok(result);
+                return Ok(await this.authorsService.DeleteAuthorAsync(Id));
             }
             catch (NotFoundItemException ex)
             {
@@ -84,7 +81,7 @@ namespace Library.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+                return this.StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
         [HttpPut("{id:int}")]

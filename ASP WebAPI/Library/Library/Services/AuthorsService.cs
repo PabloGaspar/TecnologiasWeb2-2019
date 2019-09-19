@@ -36,14 +36,15 @@ namespace Library.Services
             throw new Exception("There were an error with the DB");
         }
 
-        public bool DeleteAuthor(int id)
+        public async Task<bool> DeleteAuthorAsync(int id)
         {
-            var authorToDelete = libraryRepository.GetAuthorAsync(id);
-            if (authorToDelete == null)
+            await validatAuthorId(id);
+            await libraryRepository.DeleteAuthorAsync(id);
+            if(await libraryRepository.SaveChangesAsync())
             {
-                throw new NotFoundItemException($"author {id} does not exists");
+                return true;
             }
-            return libraryRepository.DeleteAuhor(id);
+            return false;
         }
 
         public async Task<Author> GetAuthorAsync(int id, bool showBooks)

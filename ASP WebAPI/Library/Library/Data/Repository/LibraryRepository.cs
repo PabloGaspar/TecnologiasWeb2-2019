@@ -90,10 +90,10 @@ namespace Library.Data.Repository
             return book;
         }
 
-        public bool DeleteAuhor(int id)
+        public async Task DeleteAuthorAsync(int id)
         {
-            var authorToDelete = authors.Single(a => a.id == id);
-            return authors.Remove(authorToDelete);
+            var authorToDelete = await libraryDbContext.Authors.SingleAsync(a=>a.Id==id);
+            libraryDbContext.Authors.Remove(authorToDelete);
         }
 
         public bool DeleteBook(int id)

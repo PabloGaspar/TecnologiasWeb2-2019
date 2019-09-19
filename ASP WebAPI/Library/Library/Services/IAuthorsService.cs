@@ -11,7 +11,7 @@ namespace Library.Services
         Task<IEnumerable<Author>> GetAuthorsAsync(bool showBooks, string orderBy);
         Task<Author> GetAuthorAsync(int id, bool showBooks);
         Task<Author> CreateAuthorAsync(Author newAuthor);
-        bool DeleteAuthor(int id);
+        Task<bool> DeleteAuthorAsync(int id);
         Author UpdateAuthor(int id, Author newAuthor);
     }
 }

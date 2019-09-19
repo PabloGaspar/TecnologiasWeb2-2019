@@ -27,7 +27,7 @@ namespace Library.Services
                 throw new BadRequestOperationException("URL author id and Book.AuthorId should be equal");
             }
             book.AuthorId = authorId;
-            var authorEntity = validatAuthorId(authorId);
+            var authorEntity = await validatAuthorId(authorId);
             var bookEntity = mapper.Map<BookEntity>(book);
 
             libraryRepository.CreateBook(bookEntity);

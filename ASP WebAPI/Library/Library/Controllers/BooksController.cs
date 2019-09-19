@@ -38,7 +38,7 @@ namespace Library.Controllers
         }
 
         [HttpPost()]
-        public ActionResult<Book> PostBook(int authorId, [FromBody] Book book)
+        public async Task<ActionResult<Book>> PostBook(int authorId, [FromBody] Book book)
         {
             if (!ModelState.IsValid)
             {
@@ -47,7 +47,7 @@ namespace Library.Controllers
 
             try
             {
-                var bookCreated = booksService.AddBook(authorId, book);
+                var bookCreated = await booksService.AddBookAsync(authorId, book);
                 return Created($"/api/authors/{authorId}/books/{book.Id}", bookCreated);
             }
             catch (InvalidOperationException ex)

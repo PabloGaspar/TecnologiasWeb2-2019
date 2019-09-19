@@ -81,13 +81,14 @@ namespace Library.Data.Repository
             libraryDbContext.Authors.Add(author);
         }
 
-        public Book CreateBook(Book book)
+        public void CreateBook(BookEntity book)
         {
-            var latestBook = books.OrderByDescending(b => b.Id).FirstOrDefault();
+            /**var latestBook = books.OrderByDescending(b => b.Id).FirstOrDefault();
             var nextBookId = latestBook == null ? 1 : latestBook.Id + 1;
             book.Id = nextBookId;
             books.Add(book);
-            return book;
+            return book;*/
+            libraryDbContext.Books.Add(book);
         }
 
         public async Task DeleteAuthorAsync(int id)

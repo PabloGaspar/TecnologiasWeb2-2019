@@ -10,7 +10,7 @@ namespace Library.Services
     {
         IEnumerable<Book> GetBooks(int authorId);
         Book GetBook(int authorId, int id);
-        Book AddBook(int authorId, Book book);
+        Task<Book> AddBookAsync(int authorId, Book book);
         Book EditBook(int authorId, int id, Book book);
         bool RemoveBook(int authorId, int id);
     }

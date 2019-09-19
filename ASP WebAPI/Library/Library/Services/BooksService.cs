@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
+using Library.Data.Entities;
 using Library.Data.Repository;
 using Library.Exceptions;
 using Library.Models;
@@ -11,27 +13,34 @@ namespace Library.Services
     public class BooksService : IBooksService
     {
         private ILibraryRepository libraryRepository;
-        public BooksService(ILibraryRepository libraryRepository)
+        private readonly IMapper mapper;
+        public BooksService(ILibraryRepository libraryRepository, IMapper mapper)
         {
             this.libraryRepository = libraryRepository;
+            this.mapper = mapper;
         }
 
-        public Book AddBook(int authorId, Book book)
+        public async Task<Book> AddBookAsync(int authorId, Book book)
         {
-            ValidateAuthor(authorId);
             if (book.AuthorId != null && authorId != book.AuthorId)
             {
                 throw new BadRequestOperationException("URL author id and Book.AuthorId should be equal");
             }
-
             book.AuthorId = authorId;
-            var bookCreated = libraryRepository.CreateBook(book);
-            return bookCreated;
+            var authorEntity = validatAuthorId(authorId);
+            var bookEntity = mapper.Map<BookEntity>(book);
+
+            libraryRepository.CreateBook(bookEntity);
+            if (await libraryRepository.SaveChangesAsync())
+            {
+                return mapper.Map<Book>(bookEntity);
+            }
+            throw new Exception("There were an error with the DB");
         }
 
         public Book EditBook(int authorId, int id, Book book)
         {
-            ValidateAuthor(authorId);
+            //ValidateAuthor(authorId);
             if (book.Id != null &&book.Id != id)
             {
                 throw new InvalidOperationException("book URL id and book body id should be the same");
@@ -57,7 +66,7 @@ namespace Library.Services
         public IEnumerable<Book> GetBooks(int authorId)
         {
             
-            ValidateAuthor(authorId);
+            //ValidateAuthor(authorId);
             return libraryRepository.GetBooks().Where(b => b.AuthorId == authorId);
         }
 
@@ -66,15 +75,15 @@ namespace Library.Services
             throw new NotImplementedException();
         }
 
-        private bool ValidateAuthor(int id)
+        private async Task<AuthorEntity> validatAuthorId(int id, bool showBooks = false)
         {
-            var author = libraryRepository.GetAuthorAsync(id);
+            var author = await libraryRepository.GetAuthorAsync(id);
             if (author == null)
             {
-                throw new NotFoundItemException($"Author not found with id {id}");
+                throw new NotFoundItemException($"cannot found author with id {id}");
             }
 
-            return true;
+            return author;
         }
 
         private bool ValidateBook(int id)

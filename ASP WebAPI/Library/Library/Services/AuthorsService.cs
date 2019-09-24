@@ -38,7 +38,7 @@ namespace Library.Services
 
         public async Task<bool> DeleteAuthorAsync(int id)
         {
-            await validatAuthorId(id);
+            await validateAuthor(id);
             await libraryRepository.DeleteAuthorAsync(id);
             if(await libraryRepository.SaveChangesAsync())
             {
@@ -74,25 +74,26 @@ namespace Library.Services
             return mapper.Map<IEnumerable<Author>>(authorsEntities);
         }
 
-        public Author UpdateAuthor(int id, Author newAuthor)
+        public async Task<Author> UpdateAuthorAsync(int id, Author author)
         {
-            //nada  q ver
-            validatAuthorId(id);
-
-            if (newAuthor.id == null)
+            if (id != author.Id)
             {
-                newAuthor.id = id;
+                throw new InvalidOperationException("URL id needs to be the same as Author id");
             }
-            if (id != newAuthor.id)
-            {
-                throw new BadRequestOperationException("id URL should be euqual to body");
-            }
-            newAuthor.id = id;
+            await validateAuthor(id);
 
-            return libraryRepository.UpdateAuthor(newAuthor);
+            author.Id = id;
+            var authorEntity = mapper.Map<AuthorEntity>(author);
+             libraryRepository.UpdateAuthor(authorEntity);
+            if (await libraryRepository.SaveChangesAsync())
+            {
+                return mapper.Map<Author>(authorEntity);
+            }
+
+            throw new Exception("There were an error with the DB");
         }
 
-        private async Task<AuthorEntity> validatAuthorId(int id, bool showBooks = false)
+        private async Task<AuthorEntity> validateAuthor(int id, bool showBooks = false)
         {
             var author = await libraryRepository.GetAuthorAsync(id);
             if (author == null)

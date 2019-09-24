@@ -10,32 +10,11 @@ namespace Library.Data.Repository
 {
     public class LibraryRepository : ILibraryRepository
     {
-        private List<Author> authors;
         private List<Book> books;
         private LibraryDbContext libraryDbContext;
         public LibraryRepository(LibraryDbContext libraryDbContext)
         {
             this.libraryDbContext = libraryDbContext;
-            authors = new List<Author>()
-            {
-                new Author()
-                {
-                    id = 1,
-                    LastName = "Tolkien",
-                    Age = 87,
-                    Name = "JRR",
-                    Nationallity = "south africa"
-                },
-                new Author()
-                {
-                    id = 2,
-                    LastName = "King",
-                    Age = 65,
-                    Name = "Sthephen",
-                    Nationallity = "USA"
-                }
-
-            };
 
             books = new List<Book>()
             {
@@ -163,17 +142,15 @@ namespace Library.Data.Repository
             return (await libraryDbContext.SaveChangesAsync()) > 0;
         }
 
-        public Author UpdateAuthor(Author author)
+        public void UpdateAuthor(AuthorEntity author)
         {
-            var authorToUpdate = authors.Single(a => a.id == author.id);
+            /*var authorToUpdate = libraryDBContext.Authors.Single(a => a.Id == author.Id);
             authorToUpdate.LastName = author.LastName;
             authorToUpdate.Name = author.Name;
-            authorToUpdate.Age = author.Age;
             authorToUpdate.Nationallity = author.Nationallity;
+            authorToUpdate.Age = author.Age;*/
 
-            return authorToUpdate;
-
-
+            libraryDbContext.Authors.Update(author);
         }
 
         public Book UpdateBook(Book book)

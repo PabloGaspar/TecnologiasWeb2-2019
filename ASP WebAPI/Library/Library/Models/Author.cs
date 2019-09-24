@@ -9,7 +9,7 @@ namespace Library.Models
 {
     public class Author
     {
-        public int? id { get; set; }
+        public int? Id { get; set; }
         [Required]
         public string Name { get; set; }
         [Range(1,120)]

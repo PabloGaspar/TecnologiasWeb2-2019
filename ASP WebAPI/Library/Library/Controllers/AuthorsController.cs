@@ -66,7 +66,7 @@ namespace Library.Controllers
             }
 
             var createdAuthor = await authorsService.CreateAuthorAsync(author);
-            return Created($"/api/authors/{createdAuthor.id}", createdAuthor);
+            return Created($"/api/authors/{createdAuthor.Id}", createdAuthor);
         }
         [HttpDelete("{Id:int}")]
         public async Task<ActionResult<bool>> DeleteAuthor(int Id)
@@ -85,7 +85,7 @@ namespace Library.Controllers
             }
         }
         [HttpPut("{id:int}")]
-        public ActionResult<Author> PutAuthor(int id, [FromBody]Author author )
+        public async Task<ActionResult<Author>> PutAuthor(int id, [FromBody]Author author )
         {
             if (!ModelState.IsValid)
             {
@@ -99,7 +99,7 @@ namespace Library.Controllers
 
             try
             {
-                return Ok(authorsService.UpdateAuthor(id, author));
+                return Ok(await authorsService.UpdateAuthorAsync(id, author));
 
             }
             catch (NotFoundItemException ex)

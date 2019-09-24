@@ -15,7 +15,7 @@ namespace Library.Data.Repository
         Task <AuthorEntity> GetAuthorAsync(int id, bool showBooks = false);
         Task<IEnumerable<AuthorEntity>> GetAuthorsAsync(bool showBooks = false, string orderBy = "id");
         Task DeleteAuthorAsync(int id);
-        Author UpdateAuthor(Author author);
+        void UpdateAuthor(AuthorEntity author);
         void CreateAuthor(AuthorEntity author);
 
         

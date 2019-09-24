@@ -127,9 +127,10 @@ namespace Library.Data.Repository
             return await query.ToArrayAsync();
         }
 
-        public Book GetBook(int id)
+        public Task<BookEntity> GetBookAsync(int id)
         {
-            throw new NotImplementedException();
+            IQueryable<BookEntity> query = libraryDbContext.Books;
+            return query.SingleAsync(b => b.Id == id);
         }
 
         public IEnumerable<Book> GetBooks()

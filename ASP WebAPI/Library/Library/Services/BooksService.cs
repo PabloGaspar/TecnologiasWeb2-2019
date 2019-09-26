@@ -38,24 +38,25 @@ namespace Library.Services
             throw new Exception("There were an error with the DB");
         }
 
-        public Book EditBook(int authorId, int id, Book book)
+        public async Task<Book> EditBookAsync(int authorId, int id, Book book)
         {
-            //ValidateAuthor(authorId);
-            /*if (book.Id != null &&book.Id != id)
+           
+            if (book.Id != null &&book.Id != id)
             {
                 throw new InvalidOperationException("book URL id and book body id should be the same");
             }
             
-            //ValidateAuthorAndBook(authorId, id);
-
-            var bookToupdate = await libraryRepository.GetBookAsync(id);
-            if (bookToupdate AuthorId != authorId)
-            {
-                throw new InvalidOperationException($"Author with id {authorId} doesn't have a book with id {id}");
-            }*/
+            await ValidateAuthorAndBook(authorId, id);
 
             book.AuthorId = authorId;
-            return libraryRepository.UpdateBook(book);
+            var bookEntity = mapper.Map<BookEntity>(book);
+            libraryRepository.UpdateBook(bookEntity);
+            if (await libraryRepository.SaveChangesAsync())
+            {
+                return mapper.Map<Book>(bookEntity);
+            }
+
+            throw new Exception("There were an error with the DB");
         }
 
         public async Task<Book> GetBookAsync(int authorId, int id)
@@ -97,7 +98,7 @@ namespace Library.Services
                 throw new NotFoundItemException($"cannot found author with id {authorId}");
             }
 
-            var book = await libraryRepository.GetBookAsync(bookId);
+            var book = await libraryRepository.GetBookAsync(bookId, true);
             if (book == null || book.Author.Id != authorId)
             {
                 throw new NotFoundItemException($"Book not found with id {bookId} for author {authorId}");

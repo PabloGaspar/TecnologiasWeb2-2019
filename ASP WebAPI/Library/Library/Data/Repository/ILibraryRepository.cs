@@ -23,9 +23,9 @@ namespace Library.Data.Repository
         //books
 
         IEnumerable<Book> GetBooks();
-        Task<BookEntity> GetBookAsync(int id);
+        Task<BookEntity> GetBookAsync(int id, bool showAuthor = false);
         void CreateBook(BookEntity book);
-        Book UpdateBook(Book book);
+        void UpdateBook(BookEntity book);
         bool DeleteBook(int id);
     }
 }

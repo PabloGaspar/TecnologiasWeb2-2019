@@ -96,7 +96,7 @@ namespace Library.Data.Repository
             {
                 query = query.Include(a => a.Books);
             }
-
+            query = query.AsNoTracking();
             return await query.SingleOrDefaultAsync(a => a.Id == id);
         }
 
@@ -127,9 +127,14 @@ namespace Library.Data.Repository
             return await query.ToArrayAsync();
         }
 
-        public Task<BookEntity> GetBookAsync(int id)
+        public Task<BookEntity> GetBookAsync(int id, bool showAuthor)
         {
             IQueryable<BookEntity> query = libraryDbContext.Books;
+            query = query.AsNoTracking();
+            if (showAuthor)
+            {
+                query = query.Include(b => b.Author);
+            }
             return query.SingleAsync(b => b.Id == id);
         }
 
@@ -154,13 +159,10 @@ namespace Library.Data.Repository
             libraryDbContext.Authors.Update(author);
         }
 
-        public Book UpdateBook(Book book)
+        public void UpdateBook(BookEntity book)
         {
-            var bookToUpdate = books.Single(b => b.Id == book.Id);
-            bookToUpdate.Pages = book.Pages;
-            bookToUpdate.Tittle = book.Tittle;
-            bookToUpdate.Genre = book.Genre;
-            return bookToUpdate;
+            libraryDbContext.Entry(book.Author).State = EntityState.Unchanged;
+            libraryDbContext.Books.Update(book);
         }
     }
 }

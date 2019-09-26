@@ -84,11 +84,11 @@ namespace Library.Controllers
         }
 
         [HttpPut("{id:int}")]
-        public ActionResult<Book> PutBook(int authorId, int id, [FromBody] Book book)
+        public async Task<ActionResult<Book>> PutBook(int authorId, int id, [FromBody] Book book)
         {
             try
             {
-                return booksService.EditBook(authorId, id, book);
+                return Ok(await booksService.EditBookAsync(authorId, id, book));
             }
             catch (InvalidOperationException ex)
             {

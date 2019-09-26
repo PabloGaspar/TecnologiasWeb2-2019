@@ -15,13 +15,13 @@ namespace LibraryTest
     public class UnitTest1
     {
         [Fact]
-        public void AuthorService_ShouldReturnExceptionIfNotFound()
+        public async void AuthorService_ShouldReturnExceptionIfNotFound()
         {
             //arrange
             int authorId = 22;
             var MoqlibraryRespository = new Mock<ILibraryRepository>();
             var authorEntity = new AuthorEntity() { Id = 1, Age = 22, Name = "blalfal" };
-            MoqlibraryRespository.Setup(m => m.GetAuthorAsync(1, false)).Returns(Task.FromResult(authorEntity));
+            MoqlibraryRespository.Setup(m => m.GetAuthorAsync(authorId, false)).Returns(Task.FromResult(authorEntity));
 
             var myProfile = new LibraryProfile();
             var configuration = new MapperConfiguration(cfg => cfg.AddProfile(myProfile));
@@ -29,7 +29,7 @@ namespace LibraryTest
 
             var authorService = new AuthorsService(MoqlibraryRespository.Object, mapper);
             //act 
-            Assert.ThrowsAsync<NotFoundItemException>( () => authorService.GetAuthorAsync(1, false));
+            await Assert.ThrowsAsync<NotFoundItemException>( () => authorService.GetAuthorAsync(1, false));
         }
     }
 }

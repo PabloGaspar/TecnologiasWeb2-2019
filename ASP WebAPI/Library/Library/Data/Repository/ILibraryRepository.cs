@@ -23,7 +23,7 @@ namespace Library.Data.Repository
         //books
 
         IEnumerable<Book> GetBooks();
-        Book GetBook(int id);
+        Task<BookEntity> GetBookAsync(int id);
         void CreateBook(BookEntity book);
         Book UpdateBook(Book book);
         bool DeleteBook(int id);

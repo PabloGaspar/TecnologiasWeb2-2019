@@ -41,32 +41,34 @@ namespace Library.Services
         public Book EditBook(int authorId, int id, Book book)
         {
             //ValidateAuthor(authorId);
-            if (book.Id != null &&book.Id != id)
+            /*if (book.Id != null &&book.Id != id)
             {
                 throw new InvalidOperationException("book URL id and book body id should be the same");
             }
             
-            ValidateBook(id);
+            //ValidateAuthorAndBook(authorId, id);
 
-            var bookToupdate = libraryRepository.GetBook(id);
-            if (bookToupdate.AuthorId != authorId)
+            var bookToupdate = await libraryRepository.GetBookAsync(id);
+            if (bookToupdate AuthorId != authorId)
             {
                 throw new InvalidOperationException($"Author with id {authorId} doesn't have a book with id {id}");
-            }
+            }*/
 
             book.AuthorId = authorId;
             return libraryRepository.UpdateBook(book);
         }
 
-        public Book GetBook(int authorId, int id)
+        public async Task<Book> GetBookAsync(int authorId, int id)
         {
-            throw new NotImplementedException();
+            await ValidateAuthorAndBook(authorId, id);
+            var bookEntity = await libraryRepository.GetBookAsync(id);
+            return mapper.Map<Book>(bookEntity);
         }
 
         public IEnumerable<Book> GetBooks(int authorId)
         {
             
-            //ValidateAuthor(authorId);
+            //ValidateAuthorAndBook(authorId);
             return libraryRepository.GetBooks().Where(b => b.AuthorId == authorId);
         }
 
@@ -86,12 +88,19 @@ namespace Library.Services
             return author;
         }
 
-        private bool ValidateBook(int id)
+        private async Task<bool> ValidateAuthorAndBook(int authorId, int bookId)
         {
-            var book = libraryRepository.GetBook(id);
-            if (book == null)
+
+            var author = await libraryRepository.GetAuthorAsync(authorId);
+            if (author == null)
             {
-                throw new NotFoundItemException($"Book not found with id {id}");
+                throw new NotFoundItemException($"cannot found author with id {authorId}");
+            }
+
+            var book = await libraryRepository.GetBookAsync(bookId);
+            if (book == null || book.Author.Id != authorId)
+            {
+                throw new NotFoundItemException($"Book not found with id {bookId} for author {authorId}");
             }
 
             return true;

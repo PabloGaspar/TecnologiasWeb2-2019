@@ -37,6 +37,24 @@ namespace Library.Controllers
             }
         }
 
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Book>> getBook(int authorId, int id)
+        {
+            try
+            {
+                var books = await booksService.GetBookAsync(authorId, id);
+                return Ok(books);
+            }
+            catch (NotFoundItemException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
         [HttpPost()]
         public async Task<ActionResult<Book>> PostBook(int authorId, [FromBody] Book book)
         {

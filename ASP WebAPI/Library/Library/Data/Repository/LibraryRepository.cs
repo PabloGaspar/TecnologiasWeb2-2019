@@ -123,7 +123,7 @@ namespace Library.Data.Repository
                     query = query.OrderBy(a => a.Id);
                     break;
             }
-
+            query = query.AsNoTracking();
             return await query.ToArrayAsync();
         }
 

@@ -67,6 +67,7 @@ namespace Library.Data.Repository
             book.Id = nextBookId;
             books.Add(book);
             return book;*/
+            libraryDbContext.Entry(book.Author).State = EntityState.Unchanged;
             libraryDbContext.Books.Add(book);
         }
 
@@ -135,6 +136,7 @@ namespace Library.Data.Repository
             {
                 query = query.Include(b => b.Author);
             }
+            query = query.AsNoTracking();
             return query.SingleAsync(b => b.Id == id);
         }
 
@@ -161,6 +163,12 @@ namespace Library.Data.Repository
 
         public void UpdateBook(BookEntity book)
         {
+            /*var bookToUpdate = libraryDbContext.Books.SingleOrDefault(b => b.Id == book.Id);
+            if (book.Pages != 0)
+            {
+                bookToUpdate.Pages = book.Pages
+            }*/
+            
             libraryDbContext.Entry(book.Author).State = EntityState.Unchanged;
             libraryDbContext.Books.Update(book);
         }

@@ -20,7 +20,7 @@ namespace Library.Data
 
             modelBuilder.Entity<AuthorEntity>().ToTable("Authors");
             modelBuilder.Entity<AuthorEntity>().HasMany(a => a.Books).WithOne(b => b.Author);
-            modelBuilder.Entity<BookEntity>().Property(a => a.Id).ValueGeneratedOnAdd();
+            modelBuilder.Entity<AuthorEntity>().Property(a => a.Id).ValueGeneratedOnAdd();
 
             modelBuilder.Entity<BookEntity>().ToTable("Books");
             modelBuilder.Entity<BookEntity>().Property(b => b.Id).ValueGeneratedOnAdd();

@@ -11,7 +11,7 @@ namespace Library.Data.Entities
     {
         [Key]
         [Required]
-        public int Id { get; set; }
+        public int? Id { get; set; }
         [Required]
         public string Tittle { get; set; }
         public int Pages { get; set; }

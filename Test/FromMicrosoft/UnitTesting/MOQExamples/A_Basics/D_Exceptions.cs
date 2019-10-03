@@ -17,7 +17,7 @@ namespace MOQExamples.A_Basics
             mock.Setup(x => x.Find(id)).Throws<ArgumentException>();
 
             var controller = new TestController(mock.Object);
-            Assert.Throws<ArgumentException>(() => controller.GetCustomer(12));
+            var res = Assert.Throws<ArgumentException>(() => controller.GetCustomer(12));
         }
         [Fact]
         public void Should_Mock_Specific_Exceptions()

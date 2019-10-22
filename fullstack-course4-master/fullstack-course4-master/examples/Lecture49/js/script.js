@@ -1,14 +1,19 @@
-function foo(a) {
+// Object literals and "this"
+var literalCircle = {
+    radius: 10,
 
-	var b = a * 2;
+    getArea: function () {
+        var self = this;
+        console.log(this);
 
-	function bar(c) {
-		console.log( a, b, c );
-	}
+        var increaseRadius = function () {
+            self.radius = 20;
+        };
+        increaseRadius();
+        console.log(this.radius);
 
-	bar(b * 3);
-}
+        return Math.PI * Math.pow(this.radius, 2);
+    }
+};
 
-foo( 2 ); // 2 4 12
-
-
+console.log(literalCircle.getArea());

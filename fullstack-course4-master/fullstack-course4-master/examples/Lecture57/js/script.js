@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded",
             function (request) {
               name = request.responseText;
               console.log('this',self);
-            });
+          });
             setTimeout(() => {
                document.querySelector("#content")
               .innerHTML = "<h2>Hello " + name + "!</h2>";

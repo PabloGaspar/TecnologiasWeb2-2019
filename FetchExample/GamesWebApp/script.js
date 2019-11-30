@@ -3,8 +3,7 @@
 //document.querySelector("input[type=button]").addEventListener("click", fetchData);
 document.getElementById("fetchbtn").addEventListener("click", fetchData);
 document.getElementById("postbtn").addEventListener("click", postData);
-
-
+document.getElementById("myForm").addEventListener("submit", postData);
 
 function fetchData(){
     fetch('http://localhost:57891/api/values')
@@ -35,8 +34,10 @@ async function fetchDataAsync(){
     
 }
 
-function postData (){
-    var url = 'http://localhost:57891/api/values';
+function postData (event){
+    console.log('event target', event.target.elements.name.value);
+    event.preventDefault();
+    /*var url = 'http://localhost:57891/api/values';
     //var data = {username: 'example'};
     var data = 'example';
     fetch(url, {
@@ -50,6 +51,6 @@ function postData (){
     .catch(error => console.error('Error:', error))
     .then((response) => {
         console.log('Success:', response)
-    });
+    });*/
 }
 

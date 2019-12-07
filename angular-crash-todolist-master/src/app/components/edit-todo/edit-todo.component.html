@@ -1,0 +1,8 @@
+<div >
+  <form (ngSubmit)="onSubmit(todo)">
+    <input type="checkbox" [checked]="todo.completed" (change)=onChange(todo)>
+
+    <input type="text"   name="title" [(ngModel)]="todo.title">
+    <input type="submit" value="save" >
+  </form>
+</div>

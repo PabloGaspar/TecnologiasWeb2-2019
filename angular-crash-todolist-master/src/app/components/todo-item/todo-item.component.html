@@ -9,6 +9,7 @@
     <label for="{{ todo.id }}">
       {{ todo.title }}
     </label>
+    <button (click)="onEdit(todo)" >Edit</button>
     <button (click)="onDelete(todo)" class="del">X</button>
   </p>
 </div>
